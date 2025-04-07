@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, jsonify, request
 from blockes import BlocksGame, BlockColors
 
@@ -43,4 +44,4 @@ def reset_game():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True,port=os.environ.get("PORT", 5000)) 
