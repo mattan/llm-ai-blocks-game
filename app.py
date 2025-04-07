@@ -15,7 +15,7 @@ def get_game_state():
     """Get the current game state."""
     return jsonify({
         'hitpoints': game.get_hitpoint(),
-        'blocks': [block.value for block in game.blocks]
+        'blocks': game.blocks
     })
 
 @app.route('/api/game/add_block', methods=['POST'])
