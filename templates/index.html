@@ -105,6 +105,20 @@
                 <button class="remove-btn" onclick="removeBlock()">Remove Block</button>
                 <button class="reset-btn" onclick="resetGame()">Reset Game</button>
             </div>
+            <div class="save-load-controls" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc;">
+                <h3>Save & Load Game</h3>
+                <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                    <input type="text" id="filename-input" placeholder="game_state.json" style="padding: 8px; width: 200px; margin-right: 10px;">
+                </div>
+                <div>
+                    <button class="save-btn" style="background-color: #4CAF50;" onclick="saveGameToFile()">Save to File</button>
+                    <button class="load-btn" style="background-color: #2196F3;" onclick="loadGameFromFile()">Load from File</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="save-btn" style="background-color: #ff9800;" onclick="saveGameToDB()">Save to DB</button>
+                    <button class="load-btn" style="background-color: #9c27b0;" onclick="loadGameFromDB()">Load from DB</button>
+                </div>
+            </div>
         </div>
 
         <div id="game-over" class="game-over">GAME OVER</div>
@@ -166,6 +180,74 @@
             .then(() => {
                 alert('Game reset');
                 updateDisplay();
+            });
+        }
+
+        function saveGameToFile() {
+            const filename = document.getElementById('filename-input').value || 'game_state.json';
+            fetch('/api/game/save_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game saved to file: ${data.filename}`);
+                } else {
+                    alert(`Error saving game: ${data.error}`);
+                }
+            });
+        }
+
+        function loadGameFromFile() {
+            const filename = document.getElementById('filename-input').value || 'game_state.json';
+            fetch('/api/game/load_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game loaded from file: ${data.filename}`);
+                    updateDisplay();
+                } else {
+                    alert(`Error loading game: ${data.error}`);
+                }
+            });
+        }
+
+        function saveGameToDB() {
+            fetch('/api/game/save_db', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Game saved to database');
+                } else {
+                    alert(`Error saving game: ${data.error}`);
+                }
+            });
+        }
+
+        function loadGameFromDB() {
+            fetch('/api/game/load_db', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game loaded from database (ID: ${data.game_id})`);
+                    updateDisplay();
+                } else {
+                    alert(`Error loading game: ${data.error}`);
+                }
             });
         }
 

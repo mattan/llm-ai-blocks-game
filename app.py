@@ -43,6 +43,47 @@ def reset_game():
     game.reset_state()
     return jsonify({'success': True})
 
+@app.route('/api/game/save_file', methods=['POST'])
+def save_game_file():
+    """Save the current game state to a file."""
+    filename = request.json.get('filename', 'game_state.json')
+    try:
+        game.save_to_file(filename)
+        return jsonify({'success': True, 'filename': filename})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/game/load_file', methods=['POST'])
+def load_game_file():
+    """Load a game state from a file."""
+    filename = request.json.get('filename', 'game_state.json')
+    try:
+        global game
+        game = BlocksGame.load_from_file(filename)
+        return jsonify({'success': True, 'filename': filename})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/game/save_db', methods=['POST'])
+def save_game_db():
+    """Save the current game state to the database."""
+    try:
+        game.save_to_db()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/game/load_db', methods=['POST'])
+def load_game_db():
+    """Load a game state from the database."""
+    game_id = request.json.get('game_id', 1)
+    try:
+        global game
+        game = BlocksGame.load_from_db(game_id)
+        return jsonify({'success': True, 'game_id': game_id})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/update', methods=['POST'])
 def update():
     """Update the application by pulling from git repository."""
