@@ -4,7 +4,7 @@ A simple web-based blocks game built with Flask.
 
 ## Requirements
 
-- Python 3.8 or higher
+- Python 3.13
 - MySQL database
 
 ## Installation
@@ -15,14 +15,17 @@ git clone https://github.com/mattan/llm-ai-blocks-game.git
 cd llm-ai-blocks-game
 ```
 
-2. Install Python (if not already installed):
+2. Install Python 3.13:
 ```bash
 # Windows
-# Download and install from https://www.python.org/downloads/
+# Download and install from https://www.python.org/downloads/release/python-3130/
 
 # Linux
 sudo apt update
-sudo apt install python3 python3-pip
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.13
 ```
 
 3. Install dependencies:

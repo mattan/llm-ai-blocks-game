@@ -1,7 +1,7 @@
 import enum
 import json
 import os
-from sqlalchemy import create_engine, Column, Integer, String, JSON
+from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -41,7 +41,7 @@ class BlocksGame(Base):
     __tablename__ = 'blocks_game'
     
     id = Column(Integer, primary_key=True)
-    blocks_json = Column(String, default='[]')
+    blocks_json = Column(String(1000), default='[]')
     hitpoints = Column(Integer, default=10)
     LIMIT = 3  # Maximum number of blocks allowed
     
@@ -54,6 +54,7 @@ class BlocksGame(Base):
         - Default hitpoints (10)
         - Block limit (3)
         """
+        super().__init__()
         self.blocks = []
         self.hitpoints = 10
         self.LIMIT = 3  # Maximum number of blocks allowed
@@ -192,10 +193,12 @@ class BlocksGame(Base):
         Session = sessionmaker(bind=engine)
         session = Session()
         
-        # Save the game state
-        session.merge(self)
-        session.commit()
-        session.close()
+        try:
+            # Save the game state
+            session.merge(self)
+            session.commit()
+        finally:
+            session.close()
         
     @classmethod
     def load_from_db(cls, game_id=1):
@@ -219,18 +222,20 @@ class BlocksGame(Base):
         Session = sessionmaker(bind=engine)
         session = Session()
         
-        # Try to load the game
-        game = session.query(cls).filter_by(id=game_id).first()
-        
-        if not game:
-            # If no game exists, create a new one
-            game = cls()
-            game.id = game_id
-            session.add(game)
-            session.commit()
-        
-        session.close()
-        return game
+        try:
+            # Try to load the game
+            game = session.query(cls).filter_by(id=game_id).first()
+            
+            if not game:
+                # If no game exists, create a new one
+                game = cls()
+                game.id = game_id
+                session.add(game)
+                session.commit()
+            
+            return game
+        finally:
+            session.close()
 
 
 # Create a single global instance for backwards compatibility with tests
