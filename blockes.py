@@ -41,7 +41,7 @@ class BlocksGame(Base):
     __tablename__ = 'blocks_game'
     
     id = Column(Integer, primary_key=True)
-    blocks = Column(JSON, default=list)
+    blocks_json = Column(String, default='[]')
     hitpoints = Column(Integer, default=10)
     LIMIT = 3  # Maximum number of blocks allowed
     
@@ -57,6 +57,29 @@ class BlocksGame(Base):
         self.blocks = []
         self.hitpoints = 10
         self.LIMIT = 3  # Maximum number of blocks allowed
+        
+    @property
+    def blocks(self):
+        """
+        Get the blocks list from the JSON string.
+        
+        Returns:
+            list: The list of block colors
+        """
+        try:
+            return json.loads(self.blocks_json)
+        except (json.JSONDecodeError, TypeError):
+            return []
+            
+    @blocks.setter
+    def blocks(self, value):
+        """
+        Set the blocks list as a JSON string.
+        
+        Args:
+            value (list): The list of block colors
+        """
+        self.blocks_json = json.dumps(value)
         
     def get_hitpoint(self):
         """
@@ -78,12 +101,14 @@ class BlocksGame(Base):
         Args:
             color (BlockColors): The color of the block to add
         """
-        self.blocks.append(color.value)
+        blocks_list = self.blocks
+        blocks_list.append(color.value)
+        self.blocks = blocks_list
         
         # Check if we've exceeded the limit
-        if len(self.blocks) > self.LIMIT:
+        if len(blocks_list) > self.LIMIT:
             self.hitpoints -= 1  # Reduce hitpoints by 1
-            self.blocks.clear()  # Clear all blocks
+            self.blocks = []  # Clear all blocks
             
     def remove_block(self):
         """
@@ -92,12 +117,15 @@ class BlocksGame(Base):
         Returns:
             BlockColors or None: The removed block, or None if the stack is empty
         """
+        blocks_list = self.blocks
+        
         # No blocks to remove
-        if not self.blocks:
+        if not blocks_list:
             return None
             
         # Normal case - remove and return the last block
-        color_value = self.blocks.pop()
+        color_value = blocks_list.pop()
+        self.blocks = blocks_list
         return BlockColors(color_value)
         
     def reset_state(self):
