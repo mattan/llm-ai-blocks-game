@@ -90,3 +90,51 @@ The game now supports saving and loading game state in two ways:
    ```
 
 Make sure to configure your database connection in the `.env` file before using the database features. 
+
+## Automatic Updates from GitHub
+
+The application now supports automatic updates when pushing to GitHub:
+
+### Setup on PythonAnywhere
+
+1. Initial setup and installation:
+```bash
+# Navigate to your PythonAnywhere directory
+cd /var/www/username_pythonanywhere_com
+
+# Clone your repository (if not already done)
+git clone https://github.com/username/repo-name.git .
+
+# Run the setup script to install dependencies and restart the app
+python setup.py
+```
+
+2. Configure GitHub webhook:
+   - Go to your GitHub repository
+   - Navigate to Settings > Webhooks > Add webhook
+   - Set Payload URL to: `https://username.pythonanywhere.com/update`
+   - Content type: `application/json`
+   - Secret: Create a secure random secret
+   - Select 'Just the push event'
+   - Ensure 'Active' is checked
+   - Click 'Add webhook'
+
+3. Configure the webhook secret on PythonAnywhere:
+   - Add the same secret to your environment variables
+   - On PythonAnywhere, go to the Web tab
+   - Under 'Environment variables', add:
+     - Name: `GITHUB_WEBHOOK_SECRET`
+     - Value: (the secret you created)
+
+Now, whenever you push to GitHub, your PythonAnywhere site will automatically:
+1. Pull the latest changes
+2. Install any new dependencies
+3. Restart the application
+
+### Manual Update
+
+You can also trigger an update manually by making a POST request to the update endpoint:
+
+```bash
+curl -X POST https://username.pythonanywhere.com/update
+``` 
