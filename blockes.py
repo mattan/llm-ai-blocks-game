@@ -180,11 +180,23 @@ class BlocksGame(Base):
         
     def save_to_db(self):
         """
-        Save the current game state to the MySQL database.
+        Save the current game state to the database.
         """
         # Get database connection from environment variables
-        db_url = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@localhost/blocks_game")
-        engine = create_engine(db_url)
+        db_url = os.getenv("DATABASE_URL", "sqlite:///blocks_game.db")
+        
+        # Create engine with appropriate parameters for SQLite vs MySQL
+        if db_url.startswith('sqlite'):
+            engine = create_engine(db_url)
+        else:
+            # For MySQL, add connection pooling and timeout parameters
+            engine = create_engine(
+                db_url,
+                pool_recycle=280,  # Recycle connections before MySQL's default timeout
+                connect_args={
+                    'connect_timeout': 10  # Connection timeout in seconds
+                }
+            )
         
         # Create tables if they don't exist
         Base.metadata.create_all(engine)
@@ -203,7 +215,7 @@ class BlocksGame(Base):
     @classmethod
     def load_from_db(cls, game_id=1):
         """
-        Load a game state from the MySQL database.
+        Load a game state from the database.
         
         Args:
             game_id (int): The ID of the game to load
@@ -212,8 +224,20 @@ class BlocksGame(Base):
             BlocksGame: A game instance with the loaded state
         """
         # Get database connection from environment variables
-        db_url = os.getenv("DATABASE_URL", "mysql+pymysql://user:password@localhost/blocks_game")
-        engine = create_engine(db_url)
+        db_url = os.getenv("DATABASE_URL", "sqlite:///blocks_game.db")
+        
+        # Create engine with appropriate parameters for SQLite vs MySQL
+        if db_url.startswith('sqlite'):
+            engine = create_engine(db_url)
+        else:
+            # For MySQL, add connection pooling and timeout parameters
+            engine = create_engine(
+                db_url,
+                pool_recycle=280,  # Recycle connections before MySQL's default timeout
+                connect_args={
+                    'connect_timeout': 10  # Connection timeout in seconds
+                }
+            )
         
         # Create tables if they don't exist
         Base.metadata.create_all(engine)
