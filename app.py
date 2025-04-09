@@ -91,20 +91,24 @@ def get_last_git_update():
     import datetime
     import os
     
+    # Define the Git repository path
+    git_repo_path = '/home/Mattan/mysite'
+    
     try:
-        # Check if we're in a Git repository
-        if not os.path.exists('.git'):
+        # Check if the specified directory exists and is a Git repository
+        if not os.path.exists(os.path.join(git_repo_path, '.git')):
             return jsonify({
                 'success': False,
-                'error': 'Not a Git repository',
+                'error': f'Not a Git repository at {git_repo_path}',
                 'formatted_date': 'Git info unavailable'
             })
             
-        # Get the last commit date
+        # Get the last commit date - run in the specified directory
         output = subprocess.check_output(
             ['git', 'log', '-1', '--format=%cd', '--date=iso'],
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=git_repo_path  # Specify the working directory
         ).strip()
         
         # Parse the date
@@ -118,7 +122,7 @@ def get_last_git_update():
     except subprocess.CalledProcessError as e:
         return jsonify({
             'success': False,
-            'error': f'Git command failed: {e.output}',
+            'error': f'Git command failed in {git_repo_path}: {e.output}',
             'formatted_date': 'Git info unavailable'
         }), 500
     except Exception as e:
@@ -136,6 +140,9 @@ def update():
     import hashlib
     import datetime
     
+    # Define the Git repository path
+    git_repo_path = '/home/Mattan/mysite'
+    
     # If you want to add GitHub webhook secret validation:
     if 'X-Hub-Signature' in request.headers:
         signature = request.headers.get('X-Hub-Signature')
@@ -148,24 +155,26 @@ def update():
     
     results = {'success': True, 'actions': []}
     
-    # Execute git pull
+    # Execute git pull in the specified directory
     try:
         output = subprocess.check_output(
             ['git', 'pull'],
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=git_repo_path  # Specify the working directory
         )
         results['actions'].append({'action': 'git_pull', 'output': output, 'success': True})
     except subprocess.CalledProcessError as e:
         results['actions'].append({'action': 'git_pull', 'output': e.output, 'success': False})
         results['success'] = False
     
-    # Install any new dependencies
+    # Install any new dependencies - assuming requirements.txt is in the git repo
     try:
         pip_output = subprocess.check_output(
             ['pip', 'install', '-r', 'requirements.txt'],
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=git_repo_path  # Specify the working directory
         )
         results['actions'].append({'action': 'install_dependencies', 'output': pip_output, 'success': True})
     except subprocess.CalledProcessError as e:
@@ -175,7 +184,7 @@ def update():
     # Touch the WSGI file to restart the app
     try:
         # Get absolute path to wsgi.py
-        wsgi_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wsgi.py')
+        wsgi_path = os.path.join(git_repo_path, 'wsgi.py')
         subprocess.check_output(
             ['touch', wsgi_path],
             stderr=subprocess.STDOUT,
@@ -186,12 +195,13 @@ def update():
         results['actions'].append({'action': 'restart_app', 'output': e.output, 'success': False})
         results['success'] = False
     
-    # Get the last commit date
+    # Get the last commit date from the specified directory
     try:
         last_commit_output = subprocess.check_output(
             ['git', 'log', '-1', '--format=%cd', '--date=iso'],
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=git_repo_path  # Specify the working directory
         ).strip()
         
         # Parse the date
