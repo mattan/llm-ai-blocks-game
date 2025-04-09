@@ -139,6 +139,7 @@ def update():
     import hmac
     import hashlib
     import datetime
+    import time
     
     # Define the Git repository path
     git_repo_path = '/home/Mattan/mysite'
@@ -181,19 +182,73 @@ def update():
         results['actions'].append({'action': 'install_dependencies', 'output': e.output, 'success': False})
         results['success'] = False
     
-    # Touch the WSGI file to restart the app
+    # More effective way to restart the Flask application
     try:
-        # Get absolute path to wsgi.py
+        # Touch the WSGI file to restart the app
         wsgi_path = os.path.join(git_repo_path, 'wsgi.py')
+        
+        # Also try to restart the application using various methods
+        # Method 1: Touch the WSGI file
         subprocess.check_output(
             ['touch', wsgi_path],
             stderr=subprocess.STDOUT,
             universal_newlines=True
         )
-        results['actions'].append({'action': 'restart_app', 'output': 'Application restarted', 'success': True})
+        
+        # Method 2: Also touch __init__.py files if they exist
+        init_file = os.path.join(git_repo_path, '__init__.py')
+        if os.path.exists(init_file):
+            subprocess.check_output(
+                ['touch', init_file],
+                stderr=subprocess.STDOUT,
+                universal_newlines=True
+            )
+            
+        # Method 3: Also restart the WSGI process if possible
+        try:
+            subprocess.check_output(
+                ['touch', f"{git_repo_path}/tmp/restart.txt"],
+                stderr=subprocess.STDOUT,
+                universal_newlines=True
+            )
+        except:
+            pass  # This might not exist on all hosting platforms
+            
+        results['actions'].append({'action': 'restart_app', 'output': 'Application restart initiated', 'success': True})
     except subprocess.CalledProcessError as e:
         results['actions'].append({'action': 'restart_app', 'output': e.output, 'success': False})
         results['success'] = False
+    
+    # Push changes back to Git
+    try:
+        # Add all files
+        git_add = subprocess.check_output(
+            ['git', 'add', '.'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            cwd=git_repo_path
+        )
+        
+        # Commit changes
+        git_commit = subprocess.check_output(
+            ['git', 'commit', '-m', 'Update from web UI - version changed to v3'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            cwd=git_repo_path
+        )
+        
+        # Push to remote repository
+        git_push = subprocess.check_output(
+            ['git', 'push'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            cwd=git_repo_path
+        )
+        
+        results['actions'].append({'action': 'git_push', 'output': f"{git_add}\n{git_commit}\n{git_push}", 'success': True})
+    except subprocess.CalledProcessError as e:
+        results['actions'].append({'action': 'git_push', 'output': e.output, 'success': False})
+        # Don't mark the whole process as failed if just the push fails
     
     # Get the last commit date from the specified directory
     try:
