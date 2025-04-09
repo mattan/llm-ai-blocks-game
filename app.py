@@ -89,8 +89,17 @@ def get_last_git_update():
     """Get the timestamp of the last Git update."""
     import subprocess
     import datetime
+    import os
     
     try:
+        # Check if we're in a Git repository
+        if not os.path.exists('.git'):
+            return jsonify({
+                'success': False,
+                'error': 'Not a Git repository',
+                'formatted_date': 'Git info unavailable'
+            })
+            
         # Get the last commit date
         output = subprocess.check_output(
             ['git', 'log', '-1', '--format=%cd', '--date=iso'],
@@ -106,8 +115,18 @@ def get_last_git_update():
             'last_update': last_update.isoformat(),
             'formatted_date': last_update.strftime('%Y-%m-%d %H:%M:%S')
         })
+    except subprocess.CalledProcessError as e:
+        return jsonify({
+            'success': False,
+            'error': f'Git command failed: {e.output}',
+            'formatted_date': 'Git info unavailable'
+        }), 500
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'formatted_date': 'Git info unavailable'
+        }), 500
 
 @app.route('/update', methods=['POST'])
 def update():
