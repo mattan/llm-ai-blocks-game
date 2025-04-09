@@ -188,9 +188,9 @@ def update():
         current_file = os.path.abspath(__file__)
         
         # If we're on PythonAnywhere, we might need to use the git repo path instead
-        app_file_in_repo = os.path.join(git_repo_path, 'app.py')
-        if os.path.exists(app_file_in_repo):
-            current_file = app_file_in_repo
+       #app_file_in_repo = os.path.join(git_repo_path, 'app.py')
+        #if os.path.exists(app_file_in_repo):
+        #    current_file = app_file_in_repo
             
         subprocess.check_output(
             ['touch', current_file],
