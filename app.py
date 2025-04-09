@@ -184,37 +184,21 @@ def update():
     
     # More effective way to restart the Flask application
     try:
-        # Touch the WSGI file to restart the app
-        wsgi_path = os.path.join(git_repo_path, 'wsgi.py')
+        # Touch the current file to restart the Flask application
+        current_file = os.path.abspath(__file__)
         
-        # Also try to restart the application using various methods
-        # Method 1: Touch the WSGI file
+        # If we're on PythonAnywhere, we might need to use the git repo path instead
+        app_file_in_repo = os.path.join(git_repo_path, 'app.py')
+        if os.path.exists(app_file_in_repo):
+            current_file = app_file_in_repo
+            
         subprocess.check_output(
-            ['touch', wsgi_path],
+            ['touch', current_file],
             stderr=subprocess.STDOUT,
             universal_newlines=True
         )
         
-        # Method 2: Also touch __init__.py files if they exist
-        init_file = os.path.join(git_repo_path, '__init__.py')
-        if os.path.exists(init_file):
-            subprocess.check_output(
-                ['touch', init_file],
-                stderr=subprocess.STDOUT,
-                universal_newlines=True
-            )
-            
-        # Method 3: Also restart the WSGI process if possible
-        try:
-            subprocess.check_output(
-                ['touch', f"{git_repo_path}/tmp/restart.txt"],
-                stderr=subprocess.STDOUT,
-                universal_newlines=True
-            )
-        except:
-            pass  # This might not exist on all hosting platforms
-            
-        results['actions'].append({'action': 'restart_app', 'output': 'Application restart initiated', 'success': True})
+        results['actions'].append({'action': 'restart_app', 'output': f'Application restart initiated by touching {current_file}', 'success': True})
     except subprocess.CalledProcessError as e:
         results['actions'].append({'action': 'restart_app', 'output': e.output, 'success': False})
         results['success'] = False
@@ -231,7 +215,7 @@ def update():
         
         # Commit changes
         git_commit = subprocess.check_output(
-            ['git', 'commit', '-m', 'Update from web UI - version changed to v3'],
+            ['git', 'commit', '-m', 'Update from web UI - version changed to v4'],
             stderr=subprocess.STDOUT,
             universal_newlines=True,
             cwd=git_repo_path
