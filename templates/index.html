@@ -26,6 +26,12 @@
             margin: 20px 0;
         }
 
+        .git-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
         .blocks-container {
             width: 300px;
             height: 200px;
@@ -91,6 +97,11 @@
         
         <div class="hitpoints">
             Hitpoints: <span id="hitpoints">10</span>
+        </div>
+
+        <div class="git-info" style="font-size: 14px; color: #666; margin-bottom: 15px;">
+            Last Git Update: <span id="last-git-update">Loading...</span>
+            <button onclick="refreshGitInfo()" style="font-size: 12px; padding: 2px 5px; margin-left: 5px;">Refresh</button>
         </div>
 
         <div class="blocks-container" id="blocks-container"></div>
@@ -251,8 +262,26 @@
             });
         }
 
+        function refreshGitInfo() {
+            fetch('/api/git/last_update')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('last-git-update').textContent = data.formatted_date;
+                    } else {
+                        document.getElementById('last-git-update').textContent = 'Error loading update time';
+                        console.error(`Error refreshing Git info: ${data.error}`);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('last-git-update').textContent = 'Error loading update time';
+                    console.error('Error fetching Git info:', error);
+                });
+        }
+
         // Initial display update
         updateDisplay();
+        refreshGitInfo();
     </script>
 </body>
 </html> 

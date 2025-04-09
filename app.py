@@ -84,12 +84,38 @@ def load_game_db():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/git/last_update', methods=['GET'])
+def get_last_git_update():
+    """Get the timestamp of the last Git update."""
+    import subprocess
+    import datetime
+    
+    try:
+        # Get the last commit date
+        output = subprocess.check_output(
+            ['git', 'log', '-1', '--format=%cd', '--date=iso'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        ).strip()
+        
+        # Parse the date
+        last_update = datetime.datetime.fromisoformat(output)
+        
+        return jsonify({
+            'success': True,
+            'last_update': last_update.isoformat(),
+            'formatted_date': last_update.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/update', methods=['POST'])
 def update():
     """Update the application by pulling from git repository."""
     import subprocess
     import hmac
     import hashlib
+    import datetime
     
     # If you want to add GitHub webhook secret validation:
     if 'X-Hub-Signature' in request.headers:
@@ -140,6 +166,22 @@ def update():
     except subprocess.CalledProcessError as e:
         results['actions'].append({'action': 'restart_app', 'output': e.output, 'success': False})
         results['success'] = False
+    
+    # Get the last commit date
+    try:
+        last_commit_output = subprocess.check_output(
+            ['git', 'log', '-1', '--format=%cd', '--date=iso'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True
+        ).strip()
+        
+        # Parse the date
+        last_update = datetime.datetime.fromisoformat(last_commit_output)
+        
+        results['last_update'] = last_update.isoformat()
+        results['formatted_date'] = last_update.strftime('%Y-%m-%d %H:%M:%S')
+    except Exception as e:
+        results['last_update_error'] = str(e)
     
     return jsonify(results)
 
