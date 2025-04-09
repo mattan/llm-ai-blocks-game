@@ -1,5 +1,7 @@
 import os
 from flask import Flask, render_template, jsonify, request
+import datetime
+import subprocess
 from blockes import BlocksGame, BlockColors
 
 app = Flask(__name__)
@@ -184,23 +186,51 @@ def update():
     
     # More effective way to restart the Flask application
     try:
-        # Touch the current file to restart the Flask application
-        current_file = os.path.abspath(__file__)
+        # Try multiple methods to restart the Flask application
+        restart_methods = []
         
-        # If we're on PythonAnywhere, we might need to use the git repo path instead
-       #app_file_in_repo = os.path.join(git_repo_path, 'app.py')
-        #if os.path.exists(app_file_in_repo):
-        #    current_file = app_file_in_repo
+        # Method 1: Try PythonAnywhere API if we're on that platform
+        try:
+            import requests
+            username = 'Mattan'  # Replace with your PythonAnywhere username if different
+            token = os.environ.get('PYTHONANYWHERE_API_TOKEN')
             
-        subprocess.check_output(
-            ['touch', current_file],
-            stderr=subprocess.STDOUT,
-            universal_newlines=True
-        )
+            if token:
+                response = requests.post(
+                    f'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{username}.pythonanywhere.com/reload/',
+                    headers={'Authorization': f'Token {token}'}
+                )
+                if response.status_code == 200:
+                    restart_methods.append("PythonAnywhere API reload")
+        except Exception as e:
+            # Just log the error but continue with other methods
+            print(f"Error with PythonAnywhere API: {str(e)}")
         
-        results['actions'].append({'action': 'restart_app', 'output': f'Application restart initiated by touching {current_file}', 'success': True})
-    except subprocess.CalledProcessError as e:
-        results['actions'].append({'action': 'restart_app', 'output': e.output, 'success': False})
+        # Method 2: Create a .reload file that can be watched by the WSGI server
+        reload_file = os.path.join(git_repo_path, 'tmp', 'restart.txt')
+        os.makedirs(os.path.dirname(reload_file), exist_ok=True)
+        with open(reload_file, 'w') as f:
+            f.write(f"Restart triggered at {datetime.datetime.now().isoformat()}")
+        restart_methods.append("Created restart.txt file")
+            
+        # Method 3: If running in debug mode with reloader, modify this file
+        # This will cause the auto-reloader to detect the change and restart
+        if app.debug:
+            with open(__file__, 'a') as f:
+                f.write(f"\n# Trigger reload: {datetime.datetime.now().isoformat()}")
+            restart_methods.append("Modified app file for auto-reload")
+            
+        results['actions'].append({
+            'action': 'restart_app', 
+            'output': f'Application restart initiated using methods: {", ".join(restart_methods)}', 
+            'success': True
+        })
+    except Exception as e:
+        results['actions'].append({
+            'action': 'restart_app', 
+            'output': f'Error restarting app: {str(e)}', 
+            'success': False
+        })
         results['success'] = False
     
     # Push changes back to Git
