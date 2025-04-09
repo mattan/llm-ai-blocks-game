@@ -269,12 +269,12 @@
                     if (data.success) {
                         document.getElementById('last-git-update').textContent = data.formatted_date;
                     } else {
-                        document.getElementById('last-git-update').textContent = 'Error loading update time';
+                        document.getElementById('last-git-update').textContent = data.error;
                         console.error(`Error refreshing Git info: ${data.error}`);
                     }
                 })
                 .catch(error => {
-                    document.getElementById('last-git-update').textContent = 'Error loading update time';
+                    document.getElementById('last-git-update').textContent = data.error;
                     console.error('Error fetching Git info:', error);
                 });
         }
