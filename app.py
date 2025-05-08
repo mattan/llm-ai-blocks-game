@@ -226,17 +226,23 @@ def update():
         
         # Method 1: Try PythonAnywhere API if we're on that platform
         try:
-            import requests
-            username = 'Mattan'  # Replace with your PythonAnywhere username if different
-            token = os.environ.get('PYTHONANYWHERE_API_TOKEN')
-            
-            if token:
-                response = requests.post(
-                    f'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{username}.pythonanywhere.com/reload/',
-                    headers={'Authorization': f'Token {token}'}
-                )
-                if response.status_code == 200:
-                    restart_methods.append("PythonAnywhere API reload")
+            try:
+                import requests
+                pa_api_available = True
+            except ImportError:
+                pa_api_available = False
+                
+            if pa_api_available:
+                username = 'Mattan'  # Replace with your PythonAnywhere username if different
+                token = os.environ.get('PYTHONANYWHERE_API_TOKEN')
+                
+                if token:
+                    response = requests.post(
+                        f'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{username}.pythonanywhere.com/reload/',
+                        headers={'Authorization': f'Token {token}'}
+                    )
+                    if response.status_code == 200:
+                        restart_methods.append("PythonAnywhere API reload")
         except Exception as e:
             # Just log the error but continue with other methods
             print(f"Error with PythonAnywhere API: {str(e)}")
