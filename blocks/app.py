@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, jsonify, request
 import datetime
 import subprocess
-from blockes import BlocksGame, BlockColors
+from .blockes import BlocksGame, BlockColors
 
 app = Flask(__name__)
 game = BlocksGame()

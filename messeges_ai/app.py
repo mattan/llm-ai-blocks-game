@@ -12,7 +12,7 @@ from google.auth.transport.requests import Request as GoogleAuthRequest # Alias 
 import sqlite3
 
 # Ensure we are importing from the correct location relative to app.py
-from message_saver import (
+from .message_saver import (
     get_all_messages, save_message, create_user, get_user_by_email, get_user_by_google_id,
     _print_messages_for_cli, _ensure_tables_exist
 )
