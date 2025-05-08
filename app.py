@@ -1,11 +1,8 @@
 import os
-from flask import Flask, render_template, jsonify, request, Blueprint
-import datetime
-import subprocess
-from blocks.blockes import BlocksGame, BlockColors
+from flask import Flask, render_template, Blueprint
+
 
 app = Flask(__name__)
-game = BlocksGame()
 
 # Assuming the sub-applications have their own static and template folders
 # We need to tell Flask where to find them.
