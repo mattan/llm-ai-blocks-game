@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocks Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .hitpoints {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .git-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .blocks-container {
+            width: 300px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+            background-color: #fff;
+            border: 2px solid #ccc;
+        }
+
+        .block {
+            width: 60px;
+            height: 40px;
+            position: absolute;
+            left: 120px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .block.red { background-color: red; }
+        .block.yellow { background-color: yellow; color: black; }
+        .block.green { background-color: green; }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .add-block-btn {
+            width: 100px;
+        }
+
+        .red-btn { background-color: red; }
+        .yellow-btn { background-color: yellow; color: black; }
+        .green-btn { background-color: green; }
+        .remove-btn { background-color: gray; }
+        .reset-btn { background-color: blue; }
+
+        .game-over {
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Blocks Game v5.2</h1>
+
+        <div class="hitpoints">
+            Hitpoints: <span id="hitpoints">10</span>
+        </div>
+
+        <div class="git-info" style="font-size: 14px; color: #666; margin-bottom: 15px;">
+            Last Git Update: <span id="last-git-update">Loading...</span>
+            <button onclick="refreshGitInfo()" style="font-size: 12px; padding: 2px 5px; margin-left: 5px;">Refresh</button>
+        </div>
+
+        <div class="blocks-container" id="blocks-container"></div>
+
+        <div class="controls">
+            <div>
+                <button class="add-block-btn red-btn" onclick="addBlock('RED')">RED</button>
+                <button class="add-block-btn yellow-btn" onclick="addBlock('YELLOW')">YELLOW</button>
+                <button class="add-block-btn green-btn" onclick="addBlock('GREEN')">GREEN</button>
+            </div>
+            <div>
+                <button class="remove-btn" onclick="removeBlock()">Remove Block</button>
+                <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+            </div>
+            <div class="save-load-controls" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc;">
+                <h3>Save & Load Game</h3>
+                <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                    <input type="text" id="filename-input" placeholder="game_state.json" style="padding: 8px; width: 200px; margin-right: 10px;">
+                </div>
+                <div>
+                    <button class="save-btn" style="background-color: #4CAF50;" onclick="saveGameToFile()">Save to File</button>
+                    <button class="load-btn" style="background-color: #2196F3;" onclick="loadGameFromFile()">Load from File</button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="save-btn" style="background-color: #ff9800;" onclick="saveGameToDB()">Save to DB</button>
+                    <button class="load-btn" style="background-color: #9c27b0;" onclick="loadGameFromDB()">Load from DB</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-over" class="game-over">GAME OVER</div>
+    </div>
+
+    <script>
+        function updateDisplay() {
+            fetch('/api/game/state')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('hitpoints').textContent = data.hitpoints;
+
+                    const container = document.getElementById('blocks-container');
+                    container.innerHTML = '';
+
+                    data.blocks.forEach((block, index) => {
+                        const blockElement = document.createElement('div');
+                        blockElement.className = `block ${block.toLowerCase()}`;
+                        blockElement.textContent = block;
+                        blockElement.style.bottom = `${index * 40}px`;
+                        container.appendChild(blockElement);
+                    });
+
+                    document.getElementById('game-over').style.display = 
+                        data.hitpoints <= 0 ? 'block' : 'none';
+                });
+        }
+
+        function addBlock(color) {
+            fetch('/api/game/add_block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ color }),
+            })
+            .then(() => updateDisplay());
+        }
+
+        function removeBlock() {
+            fetch('/api/game/remove_block', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.removed_block) {
+                    alert(`Removed ${data.removed_block} block`);
+                } else {
+                    alert('No blocks to remove');
+                }
+                updateDisplay();
+            });
+        }
+
+        function resetGame() {
+            fetch('/api/game/reset', {
+                method: 'POST',
+            })
+            .then(() => {
+                alert('Game reset');
+                updateDisplay();
+            });
+        }
+
+        function saveGameToFile() {
+            const filename = document.getElementById('filename-input').value || 'game_state.json';
+            fetch('/api/game/save_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game saved to file: ${data.filename}`);
+                } else {
+                    alert(`Error saving game: ${data.error}`);
+                }
+            });
+        }
+
+        function loadGameFromFile() {
+            const filename = document.getElementById('filename-input').value || 'game_state.json';
+            fetch('/api/game/load_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game loaded from file: ${data.filename}`);
+                    updateDisplay();
+                } else {
+                    alert(`Error loading game: ${data.error}`);
+                }
+            });
+        }
+
+        function saveGameToDB() {
+            fetch('/api/game/save_db', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Game saved to database');
+                } else {
+                    alert(`Error saving game: ${data.error}`);
+                }
+            });
+        }
+
+        function loadGameFromDB() {
+            fetch('/api/game/load_db', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Game loaded from database (ID: ${data.game_id})`);
+                    updateDisplay();
+                } else {
+                    alert(`Error loading game: ${data.error}`);
+                }
+            });
+        }
+
+        function refreshGitInfo() {
+            fetch('/api/git/last_update')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('last-git-update').textContent = data.formatted_date;
+                    } else {
+                        document.getElementById('last-git-update').textContent = data.error;
+                        console.error(`Error refreshing Git info: ${data.error}`);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('last-git-update').textContent = data.error;
+                    console.error('Error fetching Git info:', error);
+                });
+        }
+
+        // Initial display update
+        updateDisplay();
+        refreshGitInfo();
+    </script>
+</body>

@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+flask>=2.0.0
+blueprint>=3.4.2 
+=======
+Flask==3.0.2
+SQLAlchemy==1.4.50
+PyMySQL==1.1.0
+python-dotenv==1.0.1
+requests==2.31.0 
+>>>>>>> 236bf01c27d54129f4046a0e2c656abca537cbea
