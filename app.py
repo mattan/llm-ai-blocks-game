@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, Blueprint
+from flask import Flask, render_template, Blueprint, jsonify
 
 
 app = Flask(__name__)
@@ -35,6 +35,24 @@ app.register_blueprint(messeges_ai_bp)
 def index():
     """Render the main game page."""
     return render_template('index.html')
+
+
+@app.route('/update', methods=['POST'])
+def update():
+    """Update the application by pulling from git repository."""
+    import subprocess
+    # Define the Git repository path
+    git_repo_path = '/home/Mattan/mysite'
+
+    output = subprocess.check_output(
+            ['git', 'pull'],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            cwd=git_repo_path  # Specify the working directory
+        )
+    return jsonify(output)
+
+    
 
 
 if __name__ == '__main__':
