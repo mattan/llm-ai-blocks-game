@@ -1,3 +1,32 @@
+<<<<<<< HEAD
+# אתר אישי עם אינטגרציית בלוקים ובינה מלאכותית
+
+פרויקט זה מכיל את האתר האישי שלי עם שתי אפליקציות משנה:
+
+1. **פרויקט בלוקים** - משחק בלוקים אינטראקטיבי שפיתחתי.
+2. **פרויקט הודעות AI** - מערכת הודעות שמשולבת עם בינה מלאכותית.
+
+## מבנה הפרויקט
+
+- `templates/` - תבניות HTML של האתר הראשי
+- `blocks/` - אפליקציית משחק הבלוקים
+- `messeges_ai/` - אפליקציית ההודעות עם בינה מלאכותית
+- `app.py` - האפליקציה הראשית שמשלבת את כל המודולים
+
+## התקנה והפעלה
+
+1. התקן את הדרישות:
+```
+pip install -r requirements.txt
+```
+
+2. הפעל את השרת:
+```
+python app.py
+```
+
+3. גש לכתובת `http://localhost:5000` בדפדפן שלך. 
+=======
 # Blocks Game
 
 A simple web-based blocks game built with Flask.
@@ -138,3 +167,4 @@ You can also trigger an update manually by making a POST request to the update e
 ```bash
 curl -X POST https://username.pythonanywhere.com/update
 ``` 
+>>>>>>> 236bf01c27d54129f4046a0e2c656abca537cbea

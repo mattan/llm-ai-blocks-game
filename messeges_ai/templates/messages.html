@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Board</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .user-info { text-align: right; }
+        .auth-links a { margin-left: 10px; color: #007bff; text-decoration: none; }
+        .auth-links a:hover { text-decoration: underline; }
+        h1, h2 { color: #333; text-align: center; }
+        form { margin-bottom: 20px; display: flex; gap: 10px; }
+        form input[type="text"] { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        form input[type="submit"] { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        form input[type="submit"]:hover { background-color: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .no-messages { text-align: center; color: #777; margin-top: 20px; }
+        .flash-messages { margin-bottom: 20px; }
+        .flash-message { padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .flash-success { background-color: #d4edda; color: #155724; }
+        .flash-error { background-color: #f8d7da; color: #721c24; }
+        .flash-info { background-color: #d1ecf1; color: #0c5460; }
+        .google-login { display: inline-block; padding: 10px 15px; background-color: #4285F4; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px; }
+        .google-login:hover { background-color: #3367D6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Message Board</h1>
+            <div class="user-info">
+                {% if user %}
+                    <p>Logged in as: <strong>{{ user.username }}</strong></p>
+                    <div class="auth-links">
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                {% else %}
+                    <div class="auth-links">
+                        <a href="{{ url_for('login') }}">Login</a>
+                        <a href="{{ url_for('register') }}">Register</a>
+                    </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h2>Add a New Message</h2>
+        <form method="POST" action="{{ url_for('index') }}">
+            <input type="text" name="message" placeholder="Enter your message here..." required>
+            <input type="submit" value="Save Message">
+        </form>
+
+        <h2>Stored Messages</h2>
+        {% if messages %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages %}
+                    <tr>
+                        <td>{{ msg.id }}</td>
+                        <td>{{ msg.timestamp.split('.')[0] if msg.timestamp else 'N/A' }}</td>
+                        <td>{{ msg.username }} ({{ msg.user_id }})</td>
+                        <td>{{ msg.message_text }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-messages">No messages yet. Add one above!</p>
+        {% endif %}
+    </div>
+</body>
+</html> 
