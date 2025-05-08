@@ -137,7 +137,7 @@
 
     <script>
         function updateDisplay() {
-            fetch('/api/game/state')
+            fetch('./api/game/state')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('hitpoints').textContent = data.hitpoints;
@@ -159,7 +159,7 @@
         }
 
         function addBlock(color) {
-            fetch('api/game/add_block', {
+            fetch('./api/game/add_block', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -170,7 +170,7 @@
         }
 
         function removeBlock() {
-            fetch('api/game/remove_block', {
+            fetch('./api/game/remove_block', {
                 method: 'POST',
             })
             .then(response => response.json())
@@ -185,7 +185,7 @@
         }
 
         function resetGame() {
-            fetch('api/game/reset', {
+            fetch('./api/game/reset', {
                 method: 'POST',
             })
             .then(() => {
@@ -196,7 +196,7 @@
 
         function saveGameToFile() {
             const filename = document.getElementById('filename-input').value || 'game_state.json';
-            fetch('api/game/save_file', {
+            fetch('./api/game/save_file', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,7 +215,7 @@
 
         function loadGameFromFile() {
             const filename = document.getElementById('filename-input').value || 'game_state.json';
-            fetch('api/game/load_file', {
+            fetch('./api/game/load_file', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -234,7 +234,7 @@
         }
 
         function saveGameToDB() {
-            fetch('api/game/save_db', {
+            fetch('./api/game/save_db', {
                 method: 'POST',
             })
             .then(response => response.json())
@@ -248,7 +248,7 @@
         }
 
         function loadGameFromDB() {
-            fetch('api/game/load_db', {
+            fetch('./api/game/load_db', {
                 method: 'POST',
             })
             .then(response => response.json())
@@ -263,7 +263,7 @@
         }
 
         function refreshGitInfo() {
-            fetch('api/git/last_update')
+            fetch('./api/git/last_update')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
