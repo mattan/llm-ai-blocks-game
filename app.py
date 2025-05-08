@@ -63,12 +63,14 @@ if __name__ == '__main__':
     # ובתוך messeges_ai/app.py יש אובייקט אפליקציה בשם 'application'
     from blocks.app import app as blocks_app # שנה את הנתיב בהתאם למבנה שלך
     from messeges_ai.app import app as messeges_ai_app # שנה את הנתיב
+    from yentel.app import app as yentel_app # שנה את הנתיב
 
     # הגדרת ה-DispatcherMiddleware
     # המפתח הוא ה-prefix של ה-URL, והערך הוא אובייקט האפליקציה שיטפל בו
     application = DispatcherMiddleware(app, {
         '/blocks': blocks_app,
         '/messeges_ai': messeges_ai_app,
+        '/yentel': yentel_app,
     })
 
     # כדי להריץ את האפליקציה הזו, תשתמש בשרת WSGI כמו Gunicorn או Waitress
