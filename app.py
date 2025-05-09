@@ -3,6 +3,14 @@ from flask import Flask, render_template, Blueprint, jsonify
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
+# ייבוא של אפליקציות המשנה
+# נניח שבתוך blocks/app.py יש אובייקט אפליקציה בשם 'application'
+# ובתוך messeges_ai/app.py יש אובייקט אפליקציה בשם 'application'
+from blocks.app import app as blocks_app # שנה את הנתיב בהתאם למבנה שלך
+from messeges_ai.app import app as messeges_ai_app # שנה את הנתיב
+from yentel.app import app as yentel_app # שנה את הנתיב
+
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -29,25 +37,18 @@ def update():
     
 
 
+
+# הגדרת ה-DispatcherMiddleware
+# המפתח הוא ה-prefix של ה-URL, והערך הוא אובייקט האפליקציה שיטפל בו
+application = DispatcherMiddleware(app, {
+    '/blocks': blocks_app,
+    '/messeges_ai': messeges_ai_app,
+    '/yentel': yentel_app,
+})
+
 if __name__ == '__main__':
-
-    # ייבוא של אפליקציות המשנה
-    # נניח שבתוך blocks/app.py יש אובייקט אפליקציה בשם 'application'
-    # ובתוך messeges_ai/app.py יש אובייקט אפליקציה בשם 'application'
-    from blocks.app import app as blocks_app # שנה את הנתיב בהתאם למבנה שלך
-    from messeges_ai.app import app as messeges_ai_app # שנה את הנתיב
-    from yentel.app import app as yentel_app # שנה את הנתיב
-
-    # הגדרת ה-DispatcherMiddleware
-    # המפתח הוא ה-prefix של ה-URL, והערך הוא אובייקט האפליקציה שיטפל בו
-    application = DispatcherMiddleware(app, {
-        '/blocks': blocks_app,
-        '/messeges_ai': messeges_ai_app,
-        '/yentel': yentel_app,
-    })
-
     # כדי להריץ את האפליקציה הזו, תשתמש בשרת WSGI כמו Gunicorn או Waitress
     # לדוגמה: gunicorn main_site.app:application
     # אם אתה מריץ ישירות דרך פייתון (לצורכי פיתוח):
     from werkzeug.serving import run_simple
-    run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True) 
+    run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True)
