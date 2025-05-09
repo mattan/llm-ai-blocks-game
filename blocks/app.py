@@ -1,16 +1,16 @@
 import os
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Blueprint, current_app
 import datetime
 import subprocess
 from .blockes import BlocksGame, BlockColors
 
-app = Flask(__name__)
+app = Blueprint("blocks", __name__, template_folder="..", url_prefix="/blocks")
 game = BlocksGame()
 
 @app.route('/')
 def index():
     """Render the main game page."""
-    return render_template('index.html')
+    return render_template('blocks/templates/index.html')
 
 @app.route('/api/game/state')
 def get_game_state():

@@ -2,14 +2,14 @@ import os
 from flask import Flask, render_template, Blueprint
 
 
-app = Flask(__name__)
+app = Blueprint("yentel",__name__, template_folder="..", url_prefix="/yentel")
 
 
 
 @app.route('/')
 def index():
     """Render the main game page."""
-    return render_template('index.html')
+    return render_template('yentel/templates/index.html')
     
 
 

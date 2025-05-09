@@ -3,7 +3,7 @@ import os
 # WARNING: This is for development ONLY and should NOT be used in production.
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session,Blueprint
 import toml # For reading secret.toml
 import json
 from requests_oauthlib import OAuth2Session
@@ -18,7 +18,7 @@ from .message_saver import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+app = Blueprint("messeges_ai",__name__, template_folder="./templates", url_prefix="/messeges_ai")
 
 # --- Configuration from secret.toml ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
