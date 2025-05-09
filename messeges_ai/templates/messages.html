@@ -38,12 +38,12 @@
                 {% if user %}
                     <p>Logged in as: <strong>{{ user.username }}</strong></p>
                     <div class="auth-links">
-                        <a href="{{ url_for('logout') }}">Logout</a>
+                        <a href="{{ url_for('.logout') }}">Logout</a>
                     </div>
                 {% else %}
                     <div class="auth-links">
-                        <a href="{{ url_for('login') }}">Login</a>
-                        <a href="{{ url_for('register') }}">Register</a>
+                        <a href="{{ url_for('.login') }}">Login</a>
+                        <a href="{{ url_for('.register') }}">Register</a>
                     </div>
                 {% endif %}
             </div>
@@ -61,7 +61,7 @@
         {% endwith %}
 
         <h2>Add a New Message</h2>
-        <form method="POST" action="{{ url_for('index') }}">
+        <form method="POST" action="{{ url_for('.index') }}">
             <input type="text" name="message" placeholder="Enter your message here..." required>
             <input type="submit" value="Save Message">
         </form>
