@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, Blueprint, jsonify
+from flask import Flask, render_template, Blueprint, jsonify, request
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 
@@ -9,6 +9,7 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from blocks.app import app as blocks_app # שנה את הנתיב בהתאם למבנה שלך
 from messeges_ai.app import app as messeges_ai_app # שנה את הנתיב
 from yentel.app import app as yentel_app # שנה את הנתיב
+
 
 
 app = Flask(__name__)
@@ -45,6 +46,80 @@ application = DispatcherMiddleware(app, {
     '/messeges_ai': messeges_ai_app,
     '/yentel': yentel_app,
 })
+
+
+
+###############################################
+# don't code review this
+###############################################
+
+@app.route('/debug/')
+def debug_routes():
+    debug_info = []
+    debug_info.append("<h2>הגדרות DispatcherMiddleware:</h2>")
+    debug_info.append("<ul>")
+    debug_info.append("<li>אפליקציה ראשית: / (root)</li>")
+    debug_info.append("<li>תת-אפליקציה: /blocks -> blocks_app</li>")
+    debug_info.append("<li>תת-אפליקציה: /messeges_ai -> messeges_ai_app</li>")
+    debug_info.append("<li>תת-אפליקציה: /yentel -> yentel_app</li>")
+    debug_info.append("</ul>")
+    
+    debug_info.append("<h2>פרטי בקשה נוכחית:</h2>")
+    debug_info.append("<ul>")
+    debug_info.append(f"<li>URL: {request.url}</li>")
+    debug_info.append(f"<li>Path: {request.path}</li>")
+    debug_info.append(f"<li>Host: {request.host}</li>")
+    debug_info.append(f"<li>Script Root: {request.script_root}</li>")
+    debug_info.append("</ul>")
+    
+    debug_info.append("<h2>נתיבים מוגדרים:</h2>")
+    apps = {
+        'app (ראשי)': app,
+        'blocks_app': blocks_app,
+        'messeges_ai_app': messeges_ai_app,
+        'yentel_app': yentel_app
+    }
+    
+    for name, flask_app in apps.items():
+        debug_info.append(f"<h3>{name}:</h3><ul>")
+        for rule in flask_app.url_map.iter_rules():
+            if not str(rule).startswith('/static'):
+                debug_info.append(f"<li>{rule} ({', '.join(rule.methods)})</li>")
+        debug_info.append("</ul>")
+    
+    # קישורים לבדיקה
+    debug_info.append("<h2>קישורים לבדיקה:</h2>")
+    debug_info.append("<ul>")
+    debug_info.append('<li><a href="/">דף ראשי</a></li>')
+    debug_info.append('<li><a href="/blocks/">blocks</a></li>')
+    debug_info.append('<li><a href="/messeges_ai/">messeges_ai</a></li>')
+    debug_info.append('<li><a href="/yentel/">yentel</a></li>')
+    debug_info.append("</ul>")
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html dir="rtl">
+    <head>
+        <title>דיבוג Flask DispatcherMiddleware</title>
+        <meta charset="utf-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 20px; direction: rtl; }}
+            h1, h2, h3 {{ color: #333; }}
+            ul {{ margin-bottom: 20px; }}
+            li {{ margin: 5px 0; }}
+        </style>
+    </head>
+    <body>
+        <h1>דיבוג Flask DispatcherMiddleware</h1>
+        {''.join(debug_info)}
+    </body>
+    </html>
+    """
+    
+    return html
+
+
+
 
 if __name__ == '__main__':
     # כדי להריץ את האפליקציה הזו, תשתמש בשרת WSGI כמו Gunicorn או Waitress
