@@ -5,6 +5,8 @@ import subprocess
 from .blockes import BlocksGame, BlockColors
 
 app = Blueprint("blocks", __name__, template_folder="..", url_prefix="/blocks")
+app.html_name = "פרויקט בלוקים"
+
 game = BlocksGame()
 
 @app.route('/')

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Message Board</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        form { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="email"], input[type="password"] { width: 95%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        input[type="submit"] { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+        input[type="submit"]:hover { background-color: #0056b3; }
+        .flash-messages { margin-bottom: 20px; }
+        .flash-message { padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .flash-success { background-color: #d4edda; color: #155724; }
+        .flash-error { background-color: #f8d7da; color: #721c24; }
+        .flash-info { background-color: #d1ecf1; color: #0c5460; }
+        .alternate-auth { text-align: center; margin-top: 20px; }
+        .google-login { display: inline-block; padding: 10px 15px; background-color: #4285F4; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px; width: 90%; text-align: center; }
+        .google-login:hover { background-color: #3367D6; }
+        .register-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+        .register-link:hover { text-decoration: underline; }
+        .back-link { display: block; text-align: center; margin-top: 10px; color: #6c757d; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+
+<form method="POST" action="{{ url_for('.login') }}">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <input type="submit" value="Login">
+        </form>
+
+        <div class="alternate-auth">
+            <p>Or login with:</p>
+            <a href="{{ url_for('messeges_ai.google_login_request') }}" class="google-login">Login with Google</a>
+        </div>
+
+        <a href="{{ url_for('.register') }}" class="register-link">Don't have an account? Register here</a>
+        <a href="{{ url_for('.index') }}" class="back-link">Back to Messages</a>
+    </div>
+</body>
+</html> 

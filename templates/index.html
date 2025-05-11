@@ -85,11 +85,20 @@
         <div class="links-section">
             <h3>פרויקטים:</h3>
             <ul>
-                <li><a href="/blocks/">פרויקט בלוקים</a> (אנונימי) </li>
-                <li><a href="/messeges_ai/">פרויקט הודעות AI</a> (אנונימי) </li>
-                <li><a href="/yentel/">ינטל הכרויות (החדש)</a> (
-                    <img src="https://scontent.ftlv20-2.fna.fbcdn.net/v/t39.30808-6/378677307_10227907340302787_7484898574107698310_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeF1Y6ZqxBtchauy0xJRvYjmueQ5s-CvPkG55Dmz4K8-QXtkfR9CYnFmPtLc5Tgdyio&_nc_ohc=uUTPZXfJUWgQ7kNvwHoy5iT&_nc_oc=AdnR3FiLlfL9fbWtQdQPBoUE_dyM7yqbZBm5XhBvLlSNZXVleHDOhFbiqQxovYW2gXUD8EVBkBjWahPsnssnrov9&_nc_zt=23&_nc_ht=scontent.ftlv20-2.fna&_nc_gid=aKRmPYOrgSxmGjlMhGkzlQ&oh=00_AfJqqKadg1lQUpqb66RgBg3ZFbOlapqh2UjkmkGuZM4qbA&oe=6823C937" alt="Icon" style="width: 20px; height: 20px; vertical-align: middle;">
-                    <a href="https://www.facebook.com/hodaya.netzer">הודיה</a>)</li>
+                {% for blueprint in blueprints %}
+                <li>
+                    <a href="/{{ blueprint.name }}/">{{ blueprint.html_name }}</a> (
+                    {% if blueprint.html_img %}
+                    <img src="{{ blueprint.html_img }}" alt="Icon" style="width: 20px; height: 20px; vertical-align: middle;">
+                    {% endif %}
+                    {% if blueprint.html_link %}
+                    <a href="{{ blueprint.html_link }}">{{ blueprint.html_creator }}</a>
+                    {% else %}
+                    {{ blueprint.html_creator }}
+                    {% endif %}
+                    )
+                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>

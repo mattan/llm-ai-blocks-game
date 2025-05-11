@@ -18,8 +18,12 @@ from .message_saver import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Blueprint("messeges_ai",__name__, template_folder="./templates", url_prefix="/messeges_ai")
-app.html_name = "פרויקט הודעות AI"
+app = Blueprint("messeges_aoti",__name__, template_folder="./templates", url_prefix="/messeges_aoti")
+app.html_name = "אוטי 2.0"
+app.html_creator = "רז"
+app.html_link = "https://www.facebook.com/groups/1188234756236379/user/1051257580"
+app.html_img = "https://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/465910054_10229242207893689_8620140161043570134_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=dY1GFURxjnYQ7kNvwH0kQQG&_nc_oc=AdmCuY2vio0ck2ZFa37wMIwdn8kNsIHZq2cCj7aRJhDkiQZk9xACOGOd7XnwFaYhEjYETZWdDiZuJS01seavlk4U&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=jKXbcpqBGm_-YwI_Tj4yig&oh=00_AfIqMruRjV9lmimJADB4DK5rmZgxoz9bbVHsAoEx_lwIeg&oe=682694D8"
+
 
 
 
