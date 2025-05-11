@@ -8,11 +8,15 @@ app = Flask(__name__)
 
 blueprints_info = []
 
-def register_blueprints(root_dir='.'):
+def register_blueprints(root_dir = '.'):
     """
     מחפש את כל תתי-התיקיות שמכילות קובץ app.py,
     מייבא את האובייקט app מכל אחד מהם, ורושם אותו כ-Blueprint
     """
+
+    root_dir = '.' if os.path.basename(os.getcwd()) == 'main_site' else './mysite'
+    
+
     # עוברים על כל התיקיות תחת תיקיית השורש
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # מדלגים על תיקיית השורש עצמה
@@ -87,6 +91,7 @@ def favicon():
     return r"https://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/488657718_10162663334768762_1199208800404180674_n.png?stp=dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=2285d6&_nc_eui2=AeHDT9Bj2dsITYn699RsrfsK0DTEvFjGxojQNMS8WMbGiApYnoVwIvcirXrvyKGBfXs&_nc_ohc=APK7CZ8wCx4Q7kNvwHoy5iT&_nc_oc=AdlCmnG7SqfGOLOVZp_P-as1sV0UFA_yk2Dlhy2hKhv9vnAq5L5RZpFHBeFtwZRNM0ZRXYEQmYHiggiIbxkjnQhl&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=csO9B-xftwdPqV6tw_LeEg&oh=00_AfKnzRiVI5bH2pQjbRHK8OTXtjvr_VaDxLjaziSR2qXGgQ&oe=6823AE3Chttps://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/488657718_10162663334768762_1199208800404180674_n.png?stp=dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=2285d6&_nc_eui2=AeHDT9Bj2dsITYn699RsrfsK0DTEvFjGxojQNMS8WMbGiApYnoVwIvcirXrvyKGBfXs&_nc_ohc=APK7CZ8wCx4Q7kNvwHtjX2o&_nc_oc=AdlCmnG7SqfGOLOVZp_P-as1sV0UFA_yk2Dlhy2hKhv9vnAq5L5RZpFHBeFtwZRNM0ZRXYEQmYHiggiIbxkjnQhl&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=csO9B-xftwdPqV6tw_LeEg&oh=00_AfKnzRiVI5bH2pQjbRHK8OTXtjvr_VaDxLjaziSR2qXGgQ&oe=6823AE3C"
     
 
+register_blueprints()
 if __name__ == '__main__':
     # כדי להריץ את האפליקציה הזו, תשתמש בשרת WSGI כמו Gunicorn או Waitress
     # לדוגמה: gunicorn main_site.app:application
@@ -94,4 +99,3 @@ if __name__ == '__main__':
     #from werkzeug.serving import run_simple
     #run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True)
     app.run(debug=True,port=os.environ.get("PORT", 5000)) 
-register_blueprints()
