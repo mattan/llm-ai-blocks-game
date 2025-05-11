@@ -101,5 +101,5 @@ if __name__ == '__main__':
     # אם אתה מריץ ישירות דרך פייתון (לצורכי פיתוח):
     #from werkzeug.serving import run_simple
     #run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True)
-    register_blueprints()
     app.run(debug=True,port=os.environ.get("PORT", 5000)) 
+register_blueprints()
