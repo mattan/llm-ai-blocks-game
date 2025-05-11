@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 blueprints_info = []
 
-def register_blueprints(root_dir='./mysite'):
+def register_blueprints(root_dir='.'):
     """
     מחפש את כל תתי-התיקיות שמכילות קובץ app.py,
     מייבא את האובייקט app מכל אחד מהם, ורושם אותו כ-Blueprint
@@ -45,6 +45,15 @@ def register_blueprints(root_dir='./mysite'):
                     blueprints_info.append(blueprint_info)
                     
             except Exception as e:
+                blueprint_info = {
+                        'name': dirpath,
+                        'html_name': "",
+                        'html_creator': str(e),
+                        'html_link': "",
+                        'html_img': ""
+                    }
+                    
+                blueprints_info.append(blueprint_info)
                 print(f"שגיאה בייבוא {dirpath}/app.py: {e}")
 
 
