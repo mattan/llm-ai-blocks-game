@@ -1,10 +1,12 @@
 import os
 import importlib
-import sys
+import toml
 from flask import Flask, render_template, Blueprint, jsonify, request
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
+secrets = toml.load("secret.toml")
+app.secret_key = secrets.get("FLASK_SECRET_KEY", "default_fallback_secret_key_for_dev")
 
 blueprints_info = []
 
