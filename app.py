@@ -69,6 +69,12 @@ def index():
     print(blueprints_info)
     return render_template('index.html',blueprints = blueprints_info)
 
+@app.route('/2')
+def index2():
+    """Render the main game page."""
+    print(blueprints_info)
+    return render_template('index2.html',blueprints = blueprints_info)
+
 
 @app.route('/update', methods=['POST'])
 def update():
