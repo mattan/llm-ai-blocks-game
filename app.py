@@ -13,14 +13,6 @@ def register_blueprints(root_dir='.'):
     מחפש את כל תתי-התיקיות שמכילות קובץ app.py,
     מייבא את האובייקט app מכל אחד מהם, ורושם אותו כ-Blueprint
     """
-    blueprint_info = {
-        'name': "",
-        'html_name': "",
-        'html_creator': os.getcwd(),
-        'html_link': "",
-        'html_img': ""
-    }
-    blueprints_info.append(blueprint_info)
     # עוברים על כל התיקיות תחת תיקיית השורש
     for dirpath, dirnames, filenames in os.walk(root_dir):
         # מדלגים על תיקיית השורש עצמה
