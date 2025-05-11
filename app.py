@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 blueprints_info = []
 
-def register_blueprints(root_dir='.'):
+def register_blueprints(root_dir='./mysite'):
     """
     מחפש את כל תתי-התיקיות שמכילות קובץ app.py,
     מייבא את האובייקט app מכל אחד מהם, ורושם אותו כ-Blueprint
@@ -83,5 +83,5 @@ if __name__ == '__main__':
     # אם אתה מריץ ישירות דרך פייתון (לצורכי פיתוח):
     #from werkzeug.serving import run_simple
     #run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True)
-    register_blueprints(root_dir='.')
+    register_blueprints()
     app.run(debug=True,port=os.environ.get("PORT", 5000)) 
