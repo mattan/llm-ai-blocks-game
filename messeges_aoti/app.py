@@ -117,7 +117,7 @@ def index():
 
     # For GET request, or after POST redirect
     messages = get_all_messages(db_path=DB_PATH)
-    return render_template('messages.html', messages=messages, user=current_user)
+    return render_template('messeges_aoti/templates/messages.html', messages=messages, user=current_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

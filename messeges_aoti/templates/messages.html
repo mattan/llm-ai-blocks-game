@@ -28,12 +28,27 @@
         .flash-info { background-color: #d1ecf1; color: #0c5460; }
         .google-login { display: inline-block; padding: 10px 15px; background-color: #4285F4; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px; }
         .google-login:hover { background-color: #3367D6; }
+        .explain {align-items: flex-start;flex-direction: column; direction: rtl;}
     </style>
 </head>
 <body>
     <div class="container">
+        <header class="explain">
+            <h1>הסבר קצת על אוטי 2.0</h1> 
+            <h2>הפרוייקט בבנייה ואלה השלבים שיהיו:</h2>
+            <h3>בלי אוטי</h3>
+            <p>אפליקציה בסיסית שבה כל אחד יכול לשאול כל אחד (ההודעה שלך תגיע לכולם)</p>
+            <h3>אוטי 1.0</h3>
+            <p>כל אחד יכול לשאול את אוטי וגם לקחת שאלות מאוטי ולענות עליהן - אוטו צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
+            <h3>אוטי 2.0</h3>
+            <p>כל אחד יכול לשאול את אוטי רק מי שאוטי חושבת ש"ראוי" לפי הסטורית התשובות שלו יכול לקחת שאלות מאוטי ולענות עליהן - אוטו צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
+
+
+        </header>
+    </div>
+    <div class="container">
         <header>
-            <h1>Message Board</h1>
+            <h1>הודעות</h1>
             <div class="user-info">
                 {% if user %}
                     <p>Logged in as: <strong>{{ user.username }}</strong></p>
@@ -60,13 +75,13 @@
             {% endif %}
         {% endwith %}
 
-        <h2>Add a New Message</h2>
+        <h2>כתוב הודעה חדשה</h2>
         <form method="POST" action="{{ url_for('.index') }}">
             <input type="text" name="message" placeholder="Enter your message here..." required>
             <input type="submit" value="Save Message">
         </form>
 
-        <h2>Stored Messages</h2>
+        <h2>הודעות</h2>
         {% if messages %}
             <table>
                 <thead>
