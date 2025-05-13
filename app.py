@@ -1,8 +1,7 @@
 import os
 import importlib
 import toml
-from flask import Flask, render_template, Blueprint, jsonify, request, redirect
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from flask import Flask, render_template, jsonify, request, redirect
 
 app = Flask(__name__)
 
@@ -63,6 +62,21 @@ def register_blueprints(root_dir = '.'):
                 print(f"שגיאה בייבוא {dirpath}/app.py: {e}")
 
 
+def get_redirect_uri():
+    """
+    Gets the appropriate redirect URI based on the current host.
+    This function dynamically determines if we're on localhost or a production server.
+    """
+    if 'PYTHONANYWHERE_SITE' in os.environ:
+        # Production environment (PythonAnywhere)
+        return 'https://mattan.pythonanywhere.com/login/google/callback'
+    elif os.environ.get('FLASK_ENV') == 'production':
+        # Other production environment
+        return 'https://yourdomain.com/login/google/callback'
+    else:
+        # Local development
+        port = os.environ.get("PORT", 5001)
+        return f'http://localhost:{port}/login/google/callback'
 
 
 @app.route('/')
@@ -101,9 +115,10 @@ def favicon():
 
 @app.route('/login/google/callback')
 def google_callback_redirect():
-    """Redirects Google OAuth callbacks to the appropriate blueprint"""
-    # פשוט להפנות לבלופרינט הנכון של messeges_aoti
+    """מפנה קריאות חזרה של Google OAuth לבלופרינט המתאים"""
+    # מעביר את פרמטרי ה-query string לכתובת המלאה
     return redirect('/messeges_aoti/login/google/callback' + '?' + request.query_string.decode())
+
 
 register_blueprints()
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import os
 # WARNING: This is for development ONLY and should NOT be used in production.
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session,Blueprint
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Blueprint
 import toml # For reading secret.toml
 import json
 from requests_oauthlib import OAuth2Session
@@ -18,46 +18,33 @@ from .message_saver import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Blueprint("messeges_aoti",__name__, template_folder="./templates", url_prefix="/messeges_aoti")
+app = Blueprint("messeges_aoti", __name__, template_folder="./templates", url_prefix="/messeges_aoti")
 app.html_name = "אוטי 2.0"
 app.html_creator = "רז"
 app.html_link = "https://www.facebook.com/groups/1188234756236379/user/1051257580"
 app.html_img = "https://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/465910054_10229242207893689_8620140161043570134_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=dY1GFURxjnYQ7kNvwH0kQQG&_nc_oc=AdmCuY2vio0ck2ZFa37wMIwdn8kNsIHZq2cCj7aRJhDkiQZk9xACOGOd7XnwFaYhEjYETZWdDiZuJS01seavlk4U&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=jKXbcpqBGm_-YwI_Tj4yig&oh=00_AfIqMruRjV9lmimJADB4DK5rmZgxoz9bbVHsAoEx_lwIeg&oe=682694D8"
 
 
+@app.route('/debug')
+def debug():
+    """דף דיבאג שמציג מידע על הסביבה הנוכחית"""
+    current_url = request.host_url.rstrip('/')
+    return f"Base Directory: {os.path.dirname(os.path.abspath(__file__))}<br>Current URL: {current_url}"
 
 
 # --- Configuration from secret.toml ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Check if we're running on PythonAnywhere
-if 'PYTHONANYWHERE_SITE' in os.environ:
-    # PythonAnywhere paths
-    SECRET_FILE_PATH = os.path.join('/home/Mattan/mysite/messeges_aoti', "secret.toml")
-    DB_NAME = "chat_history.db"
-    DB_PATH = os.path.join('/home/Mattan/mysite/messeges_aoti', DB_NAME)
-else:
-    # Local development paths
-    SECRET_FILE_PATH = os.path.join(BASE_DIR, "secret.toml")
-    DB_NAME = "chat_history.db"
-    DB_PATH = os.path.join(BASE_DIR, DB_NAME)
+SECRET_FILE_PATH = os.path.join(BASE_DIR, "secret.toml")
+DB_NAME = "chat_history.db"
+DB_PATH = os.path.join(BASE_DIR, DB_NAME)
 
-try:
-    secrets = toml.load(SECRET_FILE_PATH)
-    app.secret_key = secrets.get("FLASK_SECRET_KEY", "default_fallback_secret_key_for_dev")
-    GOOGLE_CLIENT_ID = secrets.get("CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = secrets.get("CLIENT_SECRET")
-except FileNotFoundError:
-    print(f"ERROR: secret.toml not found at {SECRET_FILE_PATH}. Please create it with your credentials.")
-    # Fallback for critical missing secrets to prevent app crash, but functionality will be impaired
-    app.secret_key = "critical_fallback_secret_key"
-    GOOGLE_CLIENT_ID = None
-    GOOGLE_CLIENT_SECRET = None
-except toml.TomlDecodeError:
-    print(f"ERROR: Could not decode secret.toml. Please check its format.")
-    app.secret_key = "critical_fallback_secret_key_toml_error"
-    GOOGLE_CLIENT_ID = None
-    GOOGLE_CLIENT_SECRET = None
+
+secrets = toml.load(SECRET_FILE_PATH)
+app.secret_key = secrets.get("FLASK_SECRET_KEY", "default_fallback_secret_key_for_dev")
+GOOGLE_CLIENT_ID = secrets.get("CLIENT_ID")
+GOOGLE_CLIENT_SECRET = secrets.get("CLIENT_SECRET")
+
 
 # ---- ADD DIAGNOSTIC PRINTS ----
 print(f"DEBUG: Attempting to load secrets from: {SECRET_FILE_PATH}")
@@ -73,11 +60,7 @@ if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
 AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 TOKEN_URL = 'https://oauth2.googleapis.com/token'
 USERINFO_URL = 'https://www.googleapis.com/oauth2/v1/userinfo'
-# Check if we're running on PythonAnywhere
-if 'PYTHONANYWHERE_SITE' in os.environ:
-    REDIRECT_URI = f'https://mattan.pythonanywhere.com/login/google/callback'
-else:
-    REDIRECT_URI = 'http://localhost:5001/login/google/callback'
+
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -203,9 +186,20 @@ def google_login_request():
         flash('Google login is not configured on the server.', 'error')
         return redirect(url_for('messeges_aoti.login'))
 
-    google = OAuth2Session(GOOGLE_CLIENT_ID, scope=SCOPES, redirect_uri=REDIRECT_URI)
+    # קבלת כתובת ה-redirect URI באמצעות request.host_url
+    current_url = request.host_url.rstrip('/')  # מסיר את הסלאש בסוף אם קיים
+    redirect_uri = f"{current_url}/login/google/callback"
+    
+    google = OAuth2Session(GOOGLE_CLIENT_ID, scope=SCOPES, redirect_uri=redirect_uri)
     authorization_url, state = google.authorization_url(AUTHORIZATION_URL, access_type="offline", prompt="select_account")
-    session['oauth_state'] = state # Store state for CSRF protection
+    
+    # שמירת המידע בסשן
+    session['oauth_state'] = state  # שמירת ה-state להגנה מפני CSRF
+    session['redirect_uri'] = redirect_uri  # שמירת כתובת ה-redirect לשימוש בקריאת חזרה
+    
+    # הדפסת מידע לדיבאג
+    print(f"DEBUG: Redirect URI set to: {redirect_uri}")
+    
     return redirect(authorization_url)
 
 @app.route('/login/google/callback')
@@ -224,7 +218,14 @@ def handle_google_callback():
         flash('Invalid OAuth state. Please try logging in again.', 'error')
         return redirect(url_for('messeges_aoti.login'))
 
-    google = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=REDIRECT_URI, state=state_from_session)
+    # קבלת כתובת ה-redirect מהסשן, או יצירה מחדש אם לא קיימת
+    redirect_uri = session.get('redirect_uri')
+    if not redirect_uri:
+        current_url = request.host_url.rstrip('/')
+        redirect_uri = f"{current_url}/login/google/callback"
+        print(f"WARNING: redirect_uri not found in session, recreated as: {redirect_uri}")
+    
+    google = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=redirect_uri, state=state_from_session)
     
     try:
         # Exchange authorization code for tokens
@@ -284,7 +285,7 @@ def handle_google_callback():
 if __name__ == '__main__':
     print(f"Database will be accessed at: {DB_PATH}")
     if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
-        print(f"Google OAuth configured. CLIENT_ID: {GOOGLE_CLIENT_ID[:10]}... REDIRECT_URI: {REDIRECT_URI}")
+        print(f"Google OAuth configured. CLIENT_ID: {GOOGLE_CLIENT_ID[:10]}...")
     else:
         print("Google OAuth NOT CONFIGURED. Google login will fail.")
 
