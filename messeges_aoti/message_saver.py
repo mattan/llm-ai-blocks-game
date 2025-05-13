@@ -46,6 +46,43 @@ def get_all_messages(db_path="chat_history.db"):
         if conn:
             conn.close()
 
+
+def get_all_users(db_path="chat_history.db"):
+    """
+    Retrieves all messages from the messages table in the SQLite database.
+    Returns a list of dictionaries, where each dictionary represents a message.
+    """
+    conn = None
+    messages = []
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row # Access columns by name
+        cursor = conn.cursor()
+
+        # Ensure tables exist before querying (idempotent)
+        _ensure_tables_exist(cursor)
+
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users';")
+        if cursor.fetchone() is None:
+            # This case should ideally not be reached if _ensure_tables_exist works
+            print(f"Table 'messages' does not exist in '{db_path}'.")
+            return messages
+
+        cursor.execute("SELECT * FROM users")
+        rows = cursor.fetchall()
+
+        for row in rows:
+            messages.append(dict(row))
+        
+        return messages
+
+    except sqlite3.Error as e:
+        print(f"An error occurred while retrieving messages: {e}")
+        return messages # Return empty list on error
+    finally:
+        if conn:
+            conn.close()
+
 def _ensure_tables_exist(cursor):
     """Helper function to ensure both users and messages tables are created."""
     cursor.execute('''

@@ -14,7 +14,7 @@ import sqlite3
 # Ensure we are importing from the correct location relative to app.py
 from .message_saver import (
     get_all_messages, save_message, create_user, get_user_by_email, get_user_by_google_id,
-    _print_messages_for_cli, _ensure_tables_exist
+    _print_messages_for_cli, _ensure_tables_exist, get_all_users
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -97,6 +97,7 @@ def get_current_user_from_session():
         }
     return None
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Get current user info, if any
@@ -114,6 +115,11 @@ def index():
     # For GET request, or after POST redirect
     messages = get_all_messages(db_path=DB_PATH)
     return render_template('messeges_aoti/templates/messages.html', messages=messages, user=current_user)
+
+@app.route('/admin', methods=['GET'])
+def admin():
+    users = get_all_users(db_path=DB_PATH)
+    return render_template('messeges_aoti/templates/users.html', users=users)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
