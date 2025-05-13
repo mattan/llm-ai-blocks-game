@@ -44,7 +44,7 @@
         {% endwith %}
 
 
-<form method="POST" action="{{ url_for('.login') }}">
+<form method="POST" action="{{ url_for('messeges_aoti.login') }}">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
@@ -58,11 +58,11 @@
 
         <div class="alternate-auth">
             <p>Or login with:</p>
-            <a href="{{ url_for('messeges_ai.google_login_request') }}" class="google-login">Login with Google</a>
+            <a href="{{ url_for('messeges_aoti.google_login_request') }}" class="google-login">Login with Google</a>
         </div>
 
-        <a href="{{ url_for('.register') }}" class="register-link">Don't have an account? Register here</a>
-        <a href="{{ url_for('.index') }}" class="back-link">Back to Messages</a>
+        <a href="{{ url_for('messeges_aoti.register') }}" class="register-link">Don't have an account? Register here</a>
+        <a href="{{ url_for('messeges_aoti.index') }}" class="back-link">Back to Messages</a>
     </div>
 </body>
 </html> 

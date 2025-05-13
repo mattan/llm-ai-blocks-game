@@ -39,9 +39,9 @@
             <h3>בלי אוטי</h3>
             <p>אפליקציה בסיסית שבה כל אחד יכול לשאול כל אחד (ההודעה שלך תגיע לכולם)</p>
             <h3>אוטי 1.0</h3>
-            <p>כל אחד יכול לשאול את אוטי וגם לקחת שאלות מאוטי ולענות עליהן - אוטו צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
+            <p>כל אחד יכול לשאול את אוטי וגם לקחת שאלות מאוטי ולענות עליהן - אוטי צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
             <h3>אוטי 2.0</h3>
-            <p>כל אחד יכול לשאול את אוטי רק מי שאוטי חושבת ש"ראוי" לפי הסטורית התשובות שלו יכול לקחת שאלות מאוטי ולענות עליהן - אוטו צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
+            <p>כל אחד יכול לשאול את אוטי רק מי שאוטי חושבת ש"ראוי" לפי הסטורית התשובות שלו יכול לקחת שאלות מאוטי ולענות עליהן - אוטי צריכה להחזיר את התשובה למי ששאל (זהות השואל גלויה רק לאוטי ולא למי שקיבל שאלה מאוטי)</p>
 
 
         </header>
@@ -53,12 +53,12 @@
                 {% if user %}
                     <p>Logged in as: <strong>{{ user.username }}</strong></p>
                     <div class="auth-links">
-                        <a href="{{ url_for('.logout') }}">Logout</a>
+                        <a href="{{ url_for('messeges_aoti.logout') }}">Logout</a>
                     </div>
                 {% else %}
                     <div class="auth-links">
-                        <a href="{{ url_for('.login') }}">Login</a>
-                        <a href="{{ url_for('.register') }}">Register</a>
+                        <a href="{{ url_for('messeges_aoti.login') }}">Login</a>
+                        <a href="{{ url_for('messeges_aoti.register') }}">Register</a>
                     </div>
                 {% endif %}
             </div>
@@ -76,7 +76,7 @@
         {% endwith %}
 
         <h2>כתוב הודעה חדשה</h2>
-        <form method="POST" action="{{ url_for('.index') }}">
+        <form method="POST" action="{{ url_for('messeges_aoti.index') }}">
             <input type="text" name="message" placeholder="Enter your message here..." required>
             <input type="submit" value="Save Message">
         </form>

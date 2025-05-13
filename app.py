@@ -1,7 +1,7 @@
 import os
 import importlib
 import toml
-from flask import Flask, render_template, Blueprint, jsonify, request
+from flask import Flask, render_template, Blueprint, jsonify, request, redirect
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
@@ -99,6 +99,12 @@ def favicon():
     return r"https://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/488657718_10162663334768762_1199208800404180674_n.png?stp=dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=2285d6&_nc_eui2=AeHDT9Bj2dsITYn699RsrfsK0DTEvFjGxojQNMS8WMbGiApYnoVwIvcirXrvyKGBfXs&_nc_ohc=APK7CZ8wCx4Q7kNvwHoy5iT&_nc_oc=AdlCmnG7SqfGOLOVZp_P-as1sV0UFA_yk2Dlhy2hKhv9vnAq5L5RZpFHBeFtwZRNM0ZRXYEQmYHiggiIbxkjnQhl&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=csO9B-xftwdPqV6tw_LeEg&oh=00_AfKnzRiVI5bH2pQjbRHK8OTXtjvr_VaDxLjaziSR2qXGgQ&oe=6823AE3Chttps://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/488657718_10162663334768762_1199208800404180674_n.png?stp=dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=2285d6&_nc_eui2=AeHDT9Bj2dsITYn699RsrfsK0DTEvFjGxojQNMS8WMbGiApYnoVwIvcirXrvyKGBfXs&_nc_ohc=APK7CZ8wCx4Q7kNvwHtjX2o&_nc_oc=AdlCmnG7SqfGOLOVZp_P-as1sV0UFA_yk2Dlhy2hKhv9vnAq5L5RZpFHBeFtwZRNM0ZRXYEQmYHiggiIbxkjnQhl&_nc_zt=23&_nc_ht=scontent.ftlv20-1.fna&_nc_gid=csO9B-xftwdPqV6tw_LeEg&oh=00_AfKnzRiVI5bH2pQjbRHK8OTXtjvr_VaDxLjaziSR2qXGgQ&oe=6823AE3C"
     
 
+@app.route('/login/google/callback')
+def google_callback_redirect():
+    """Redirects Google OAuth callbacks to the appropriate blueprint"""
+    # פשוט להפנות לבלופרינט הנכון של messeges_aoti
+    return redirect('/messeges_aoti/login/google/callback' + '?' + request.query_string.decode())
+
 register_blueprints()
 if __name__ == '__main__':
     # כדי להריץ את האפליקציה הזו, תשתמש בשרת WSGI כמו Gunicorn או Waitress
@@ -106,4 +112,4 @@ if __name__ == '__main__':
     # אם אתה מריץ ישירות דרך פייתון (לצורכי פיתוח):
     #from werkzeug.serving import run_simple
     #run_simple('localhost', 5000, application, use_reloader=True, use_debugger=True)
-    app.run(debug=True,port=os.environ.get("PORT", 5000)) 
+    app.run(debug=True,port=os.environ.get("PORT", 5001)) 

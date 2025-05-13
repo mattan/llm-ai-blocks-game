@@ -29,9 +29,18 @@ app.html_img = "https://scontent.ftlv20-1.fna.fbcdn.net/v/t39.30808-6/465910054_
 
 # --- Configuration from secret.toml ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SECRET_FILE_PATH = os.path.join(BASE_DIR, "secret.toml")
-DB_NAME = "chat_history.db"
-DB_PATH = os.path.join(BASE_DIR, DB_NAME)
+
+# Check if we're running on PythonAnywhere
+if 'PYTHONANYWHERE_SITE' in os.environ:
+    # PythonAnywhere paths
+    SECRET_FILE_PATH = os.path.join('/home/Mattan/mysite/messeges_aoti', "secret.toml")
+    DB_NAME = "chat_history.db"
+    DB_PATH = os.path.join('/home/Mattan/mysite/messeges_aoti', DB_NAME)
+else:
+    # Local development paths
+    SECRET_FILE_PATH = os.path.join(BASE_DIR, "secret.toml")
+    DB_NAME = "chat_history.db"
+    DB_PATH = os.path.join(BASE_DIR, DB_NAME)
 
 try:
     secrets = toml.load(SECRET_FILE_PATH)
@@ -64,8 +73,11 @@ if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
 AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 TOKEN_URL = 'https://oauth2.googleapis.com/token'
 USERINFO_URL = 'https://www.googleapis.com/oauth2/v1/userinfo'
-# Make sure this matches EXACTLY what you configured in Google Cloud Console
-REDIRECT_URI = 'http://localhost:5001/login/google/callback' 
+# Check if we're running on PythonAnywhere
+if 'PYTHONANYWHERE_SITE' in os.environ:
+    REDIRECT_URI = f'https://mattan.pythonanywhere.com/login/google/callback'
+else:
+    REDIRECT_URI = 'http://localhost:5001/login/google/callback'
 SCOPES = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -113,7 +125,7 @@ def index():
             user_id_to_save = current_user['id'] if current_user else 0
             save_message(message_content, user_id=user_id_to_save, db_path=DB_PATH)
             flash('Message saved successfully!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('messeges_aoti.index'))
 
     # For GET request, or after POST redirect
     messages = get_all_messages(db_path=DB_PATH)
@@ -122,7 +134,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if get_current_user_from_session():
-        return redirect(url_for('index'))
+        return redirect(url_for('messeges_aoti.index'))
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -136,7 +148,7 @@ def login():
         if user and user.get('password_hash') and check_password_hash(user['password_hash'], password):
             login_user_session(user)
             flash(f'Welcome back, {user["username"]}!', 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('messeges_aoti.index'))
         else:
             flash('Invalid email or password. Please try again or register.', 'error')
     
@@ -145,7 +157,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if get_current_user_from_session():
-        return redirect(url_for('index'))
+        return redirect(url_for('messeges_aoti.index'))
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
@@ -159,7 +171,7 @@ def register():
         existing_user = get_user_by_email(email, db_path=DB_PATH)
         if existing_user:
             flash('Email already registered. Please log in.', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('messeges_aoti.login'))
         
         # Hash the password for security
         password_hash = generate_password_hash(password)
@@ -172,7 +184,7 @@ def register():
             user = get_user_by_email(email, db_path=DB_PATH)
             login_user_session(user)  # Log them in automatically
             flash(f'Account created successfully. Welcome, {username}!', 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('messeges_aoti.index'))
         else:
             flash('An error occurred during registration', 'error')
     
@@ -182,14 +194,14 @@ def register():
 def logout():
     logout_user_session()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('messeges_aoti.index'))
 
 # --- Google OAuth Routes ---
 @app.route('/login/google')
 def google_login_request():
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         flash('Google login is not configured on the server.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('messeges_aoti.login'))
 
     google = OAuth2Session(GOOGLE_CLIENT_ID, scope=SCOPES, redirect_uri=REDIRECT_URI)
     authorization_url, state = google.authorization_url(AUTHORIZATION_URL, access_type="offline", prompt="select_account")
@@ -198,16 +210,19 @@ def google_login_request():
 
 @app.route('/login/google/callback')
 def google_login_callback():
+    return handle_google_callback()
+
+def handle_google_callback():
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         flash('Google login is not configured on the server (callback).', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('messeges_aoti.login'))
 
     # CSRF protection: check state
     state_from_session = session.pop('oauth_state', None)
     state_from_request = request.args.get('state')
     if not state_from_session or state_from_session != state_from_request:
         flash('Invalid OAuth state. Please try logging in again.', 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('messeges_aoti.login'))
 
     google = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=REDIRECT_URI, state=state_from_session)
     
@@ -220,7 +235,7 @@ def google_login_callback():
         userinfo_response = google.get(USERINFO_URL)
         if not userinfo_response.ok:
             flash('Failed to fetch user info from Google.', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('messeges_aoti.login'))
         
         user_info_json = userinfo_response.json()
         google_id = user_info_json.get('id')
@@ -229,7 +244,7 @@ def google_login_callback():
 
         if not email or not google_id:
             flash('Could not retrieve email or Google ID from Google.', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('messeges_aoti.login'))
 
         # Check if user exists by Google ID or email, then create/update
         user = get_user_by_google_id(google_id, db_path=DB_PATH)
@@ -247,7 +262,7 @@ def google_login_callback():
                 user = get_user_by_google_id(google_id, db_path=DB_PATH) # Fetch the newly created user
             else:
                 flash('Failed to create or link your account.', 'error')
-                return redirect(url_for('login'))
+                return redirect(url_for('messeges_aoti.login'))
         else: # User found, ensure their username is up-to-date from Google if needed
             if user['username'] != username: # Trivial update example
                  # Potentially update username or other details here in DB
@@ -256,15 +271,15 @@ def google_login_callback():
         if user:
             login_user_session(user)
             flash(f'Successfully logged in as {user["username"]} via Google!', 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('messeges_aoti.index'))
         else:
             flash('An unexpected error occurred during Google login.', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('messeges_aoti.login'))
 
     except Exception as e:
         flash(f'Google login failed: {str(e)}', 'error')
         print(f"Google OAuth Error: {e}") # Log the error for debugging
-        return redirect(url_for('login'))
+        return redirect(url_for('messeges_aoti.login'))
 
 if __name__ == '__main__':
     print(f"Database will be accessed at: {DB_PATH}")

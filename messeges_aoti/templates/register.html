@@ -43,7 +43,7 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="{{ url_for('.register') }}">
+        <form method="POST" action="{{ url_for('messeges_aoti.register') }}">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
@@ -61,11 +61,11 @@
 
         <div class="alternate-auth">
             <p>Or register with:</p>
-            <a href="{{ url_for('.google_login_request') }}" class="google-login">Register with Google</a>
+            <a href="{{ url_for('messeges_aoti.google_login_request') }}" class="google-login">Register with Google</a>
         </div>
 
-        <a href="{{ url_for('.login') }}" class="login-link">Already have an account? Login here</a>
-        <a href="{{ url_for('.index') }}" class="back-link">Back to Messages</a>
+        <a href="{{ url_for('messeges_aoti.login') }}" class="login-link">Already have an account? Login here</a>
+        <a href="{{ url_for('messeges_aoti.index') }}" class="back-link">Back to Messages</a>
     </div>
 </body>
 </html> 
