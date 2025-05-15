@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול ניתוחי לוג - Cursor Log Count</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            direction: rtl;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+        }
+        .empty-message {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>ניהול ניתוחי לוג</h1>
+    
+    {% if entries %}
+    <table>
+        <tr>
+            <th>תאריך</th>
+            <th>שם קובץ</th>
+            <th>פעולות</th>
+        </tr>
+        {% for entry in entries %}
+        <tr>
+            <td>{{ entry.timestamp }}</td>
+            <td>{{ entry.filename }}</td>
+            <td><a href="/cursor_log_count/admin/view/{{ entry.id }}">צפה בניתוח</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="empty-message">
+        <p>אין עדיין רשומות בהיסטוריה.</p>
+    </div>
+    {% endif %}
+    
+    <a href="/cursor_log_count/" class="back-link">חזרה לעמוד הראשי</a>
+</body>
+</html>

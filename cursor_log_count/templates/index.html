@@ -1,12 +1,281 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cursor Log Count</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            direction: rtl;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .upload-container {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .upload-container.dragover {
+            background-color: #e9e9e9;
+            border-color: #999;
+        }
+        #drop-zone {
+            padding: 40px;
+            cursor: pointer;
+        }
+        #file-input {
+            display: none;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .results {
+            margin-top: 20px;
+            display: none;
+        }
+        .price-table {
+            margin-top: 20px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .admin-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-    <h1>ברוכים הבאים ל-Cursor Log Count</h1>
-    <p>כאן יוצג מידע על ספירת הלוגים של Cursor.</p>
+    <h1>ניתוח קבצי לוג של Cursor</h1>
+    
+    <div class="upload-container">
+        <div id="drop-zone">
+            <p>גרור לכאן קובץ לוג או לחץ לבחירת קובץ</p>
+            <input type="file" id="file-input" accept=".txt,.md,.log">
+            <button type="button" id="upload-button">העלה ונתח</button>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <p>מנתח את קובץ הלוג...</p>
+    </div>
+    
+    <div class="results" id="results">
+        <h2>תוצאות הניתוח</h2>
+        <table>
+            <tr>
+                <th>מדד</th>
+                <th>ערך</th>
+            </tr>
+            <tr>
+                <td>מספר שאילתות</td>
+                <td id="queries-count">0</td>
+            </tr>
+            <tr>
+                <td>תווי קלט</td>
+                <td id="input-chars">0</td>
+            </tr>
+            <tr>
+                <td>טוקנים בקלט</td>
+                <td id="input-tokens">0</td>
+            </tr>
+            <tr>
+                <td>תווי קוד בפלט</td>
+                <td id="output-code-chars">0</td>
+            </tr>
+            <tr>
+                <td>טוקנים בקוד פלט</td>
+                <td id="output-code-tokens">0</td>
+            </tr>
+            <tr>
+                <td>תווי שיחה בפלט</td>
+                <td id="output-conversation-chars">0</td>
+            </tr>
+            <tr>
+                <td>טוקנים בשיחת פלט</td>
+                <td id="output-conversation-tokens">0</td>
+            </tr>
+            <tr>
+                <td>סה"כ תווי פלט</td>
+                <td id="output-total-chars">0</td>
+            </tr>
+            <tr>
+                <td>סה"כ טוקנים בפלט</td>
+                <td id="output-total-tokens">0</td>
+            </tr>
+            <tr>
+                <td>סה"כ תווים</td>
+                <td id="total-chars">0</td>
+            </tr>
+            <tr>
+                <td>סה"כ טוקנים</td>
+                <td id="total-tokens">0</td>
+            </tr>
+        </table>
+        
+        <h2>הערכות מחיר</h2>
+        <table class="price-table">
+            <tr>
+                <th>מודל/ספק</th>
+                <th>מחיר ($)</th>
+            </tr>
+            <tr>
+                <td>Coursera (לפי שאילתה)</td>
+                <td id="price-coursera">$0.00</td>
+            </tr>
+            <tr>
+                <td>O3 API</td>
+                <td id="price-o3-api">$0.00</td>
+            </tr>
+            <tr>
+                <td>Claude 3.7</td>
+                <td id="price-claude3-7">$0.00</td>
+            </tr>
+            <tr>
+                <td>Gemini 2.5</td>
+                <td id="price-gemini-2-5">$0.00</td>
+            </tr>
+        </table>
+    </div>
+    
+    <script>
+        // Get elements
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const uploadButton = document.getElementById('upload-button');
+        const uploadContainer = document.querySelector('.upload-container');
+        const resultsDiv = document.getElementById('results');
+        const loadingDiv = document.getElementById('loading');
+        
+        // Add event listeners for drag and drop
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadContainer.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            uploadContainer.classList.remove('dragover');
+        }
+        
+        // Handle file drop
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+            }
+        }
+        
+        // Handle file upload
+        uploadButton.addEventListener('click', () => {
+            if (!fileInput.files.length) {
+                alert('נא לבחור קובץ תחילה');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Show loading
+            loadingDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            
+            // Send request
+            fetch('/cursor_log_count/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading, show results
+                loadingDiv.style.display = 'none';
+                resultsDiv.style.display = 'block';
+                
+                // Update results
+                document.getElementById('queries-count').textContent = data.queries_count;
+                document.getElementById('input-chars').textContent = data.input_chars;
+                document.getElementById('input-tokens').textContent = data.input_tokens;
+                document.getElementById('output-code-chars').textContent = data.output_code_chars;
+                document.getElementById('output-code-tokens').textContent = data.output_code_tokens;
+                document.getElementById('output-conversation-chars').textContent = data.output_conversation_chars;
+                document.getElementById('output-conversation-tokens').textContent = data.output_conversation_tokens;
+                document.getElementById('output-total-chars').textContent = data.output_total_chars;
+                document.getElementById('output-total-tokens').textContent = data.output_total_tokens;
+                document.getElementById('total-chars').textContent = data.total_chars;
+                document.getElementById('total-tokens').textContent = data.total_tokens;
+                
+                // Update pricing
+                document.getElementById('price-coursera').textContent = '$' + data.price_coursera.toFixed(6);
+                document.getElementById('price-o3-api').textContent = '$' + data.price_o3_api.toFixed(6);
+                document.getElementById('price-claude3-7').textContent = '$' + data.price_claude3_7.toFixed(6);
+                document.getElementById('price-gemini-2-5').textContent = '$' + data.price_gemini_2_5.toFixed(6);
+            })
+            .catch(error => {
+                loadingDiv.style.display = 'none';
+                alert('שגיאה: ' + error.message);
+            });
+        });
+    </script>
 </body>
-</html> 
+</html>
