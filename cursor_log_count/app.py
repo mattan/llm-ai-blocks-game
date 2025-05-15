@@ -4,16 +4,15 @@ from flask import Flask, render_template, Blueprint
 
 app = Blueprint("cursor_log_count",__name__, template_folder="templates", url_prefix="/cursor_log_count")
 app.html_name = "Cursor Log Count"
-app.html_creator = "AI Assistant"
-app.html_link = ""  # Add a relevant link if you have one
-app.html_img = ""   # Add a relevant image URL if you have one
-
+app.html_creator = "איתמר"
+app.html_link = "https://www.facebook.com/itamar.ho"  
+app.html_img = "/static/itamar.ho.jpg"  
 
 
 @app.route('/')
 def index():
     """Render the main page."""
-    return render_template('index.html')
+    return render_template('cursor_log_count/templates/index.html')
     
 
 
