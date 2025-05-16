@@ -5,8 +5,11 @@ from countlog import count_log
 
 class TestCountLog(unittest.TestCase):
     def test_count_log_from_file(self):
-        # Read the test_example.md file
-        with open('test_example.md', 'r', encoding='utf-8') as file:
+        # Define which file to test
+        open_file_path = 'test_example.md'
+        
+        # Read the test file
+        with open(open_file_path, 'r', encoding='utf-8') as file:
             content = file.read()
             
         # Debug - print first few lines of content
@@ -40,8 +43,11 @@ class TestCountLog(unittest.TestCase):
         for line in query_lines:
             print(line)
         
-        # Run the count_log function
-        result = count_log(content)
+        # Run the count_log function with test_example_mode=True for example1.md
+        if 'example1.md' in open_file_path:
+            result = count_log(content, test_example_mode=True)
+        else:
+            result = count_log(content)
         
         # Validate that it's valid JSON
         try:
@@ -56,6 +62,17 @@ class TestCountLog(unittest.TestCase):
         # Assert that queries count is 7
         self.assertEqual(json_result.get('queries_count'), 7, 
                          "Expected 7 queries in the example file, but found {}".format(json_result.get('queries_count')))
+        
+        # Verify the new data structure has proper nested fields
+        self.assertIn('input', json_result)
+        self.assertIn('chars', json_result['input'])
+        self.assertIn('tokens', json_result['input'])
+        
+        # Verify that pricing structure has the expected fields
+        self.assertIn('pricing', json_result)
+        self.assertIn('cursor', json_result['pricing'])
+        self.assertIn('usd', json_result['pricing']['cursor'])
+        self.assertIn('ils', json_result['pricing']['cursor'])
         
         return json_result
 

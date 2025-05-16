@@ -12,6 +12,14 @@
             padding: 20px;
             direction: rtl;
         }
+        .exchange-rate-info {
+            background-color: #f0f8ff; /* Light blue background */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            text-align: center;
+        }
         h1 {
             color: #333;
             text-align: center;
@@ -96,53 +104,42 @@
     
     <div class="results" id="results">
         <h2>תוצאות הניתוח</h2>
+        <div class="exchange-rate-info">
+            <p>שער הדולר: <span id="exchange-rate">0.00</span> ש"ח | מעודכן לתאריך: <span id="exchange-rate-timestamp">-</span></p>
+        </div>
         <table>
             <tr>
                 <th>מדד</th>
-                <th>ערך</th>
+                <th>תווים</th>
+                <th>טוקנים</th>
             </tr>
             <tr>
                 <td>מספר שאילתות</td>
-                <td id="queries-count">0</td>
+                <td id="queries-count" colspan="2">0</td>
             </tr>
             <tr>
-                <td>תווי קלט</td>
+                <td>קלט</td>
                 <td id="input-chars">0</td>
-            </tr>
-            <tr>
-                <td>טוקנים בקלט</td>
                 <td id="input-tokens">0</td>
             </tr>
             <tr>
-                <td>תווי קוד בפלט</td>
+                <td>קוד בפלט</td>
                 <td id="output-code-chars">0</td>
-            </tr>
-            <tr>
-                <td>טוקנים בקוד פלט</td>
                 <td id="output-code-tokens">0</td>
             </tr>
             <tr>
-                <td>תווי שיחה בפלט</td>
+                <td>שיחה בפלט</td>
                 <td id="output-conversation-chars">0</td>
-            </tr>
-            <tr>
-                <td>טוקנים בשיחת פלט</td>
                 <td id="output-conversation-tokens">0</td>
             </tr>
             <tr>
-                <td>סה"כ תווי פלט</td>
+                <td>סה"כ פלט</td>
                 <td id="output-total-chars">0</td>
-            </tr>
-            <tr>
-                <td>סה"כ טוקנים בפלט</td>
                 <td id="output-total-tokens">0</td>
             </tr>
             <tr>
-                <td>סה"כ תווים</td>
+                <td>סה"כ</td>
                 <td id="total-chars">0</td>
-            </tr>
-            <tr>
-                <td>סה"כ טוקנים</td>
                 <td id="total-tokens">0</td>
             </tr>
         </table>
@@ -152,22 +149,37 @@
             <tr>
                 <th>מודל/ספק</th>
                 <th>מחיר ($)</th>
+                <th>מחיר (שח)</th>
+                <th>מחיר Cursor ($)</th>
+                <th>מחיר Cursor (שח)</th>
             </tr>
             <tr>
-                <td>Coursera (לפי שאילתה)</td>
-                <td id="price-coursera">$0.00</td>
+                <td>Cursor (לפי שאילתה)</td>
+                <td id="price-cursor-usd">$0.00</td>
+                <td id="price-cursor-ils">₪0.00</td>
+                <td id="price-cursor-cursor-usd">$0.00</td>
+                <td id="price-cursor-cursor-ils">₪0.00</td>
             </tr>
             <tr>
                 <td>O3 API</td>
-                <td id="price-o3-api">$0.00</td>
+                <td id="price-o3-usd">$0.00</td>
+                <td id="price-o3-ils">₪0.00</td>
+                <td id="price-o3-cursor-usd">$0.00</td>
+                <td id="price-o3-cursor-ils">₪0.00</td>
             </tr>
             <tr>
                 <td>Claude 3.7</td>
-                <td id="price-claude3-7">$0.00</td>
+                <td id="price-claude-usd">$0.00</td>
+                <td id="price-claude-ils">₪0.00</td>
+                <td id="price-claude-cursor-usd">$0.00</td>
+                <td id="price-claude-cursor-ils">₪0.00</td>
             </tr>
             <tr>
                 <td>Gemini 2.5</td>
-                <td id="price-gemini-2-5">$0.00</td>
+                <td id="price-gemini-usd">$0.00</td>
+                <td id="price-gemini-ils">₪0.00</td>
+                <td id="price-gemini-cursor-usd">$0.00</td>
+                <td id="price-gemini-cursor-ils">₪0.00</td>
             </tr>
         </table>
     </div>
@@ -181,9 +193,15 @@
         const resultsDiv = document.getElementById('results');
         const loadingDiv = document.getElementById('loading');
         
+        // הוספת אירוע לחיצה על הכפתור לניתוח הקובץ
+        uploadButton.addEventListener('click', function(e) {
+            e.preventDefault(); // מניעת ברירת המחדל של הכפתור
+            analyzeFile();
+        });
+        
         // Add event listeners for drag and drop
         dropZone.addEventListener('click', () => fileInput.click());
-        
+        // מניעת התנהגויות ברירת מחדל של גרירה - רק באזור הגרירה עצמו
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
@@ -209,20 +227,26 @@
             uploadContainer.classList.remove('dragover');
         }
         
-        // Handle file drop
+        // טיפול בגרירת קובץ
         dropZone.addEventListener('drop', handleDrop, false);
         
         function handleDrop(e) {
+            e.preventDefault(); // חשוב מאוד - מניעת פתיחת הקובץ בדפדפן
+            e.stopPropagation();
+            
             const dt = e.dataTransfer;
             const files = dt.files;
             
             if (files.length) {
                 fileInput.files = files;
+                console.log("קובץ נגרר, מפעיל ניתוח", files[0].name);
+                // הפעלה אוטומטית של הניתוח אחרי גרירה
+                analyzeFile();
             }
         }
         
-        // Handle file upload
-        uploadButton.addEventListener('click', () => {
+        // Function to analyze file
+        function analyzeFile() {
             if (!fileInput.files.length) {
                 alert('נא לבחור קובץ תחילה');
                 return;
@@ -254,28 +278,54 @@
                 
                 // Update results
                 document.getElementById('queries-count').textContent = data.queries_count;
-                document.getElementById('input-chars').textContent = data.input_chars;
-                document.getElementById('input-tokens').textContent = data.input_tokens;
-                document.getElementById('output-code-chars').textContent = data.output_code_chars;
-                document.getElementById('output-code-tokens').textContent = data.output_code_tokens;
-                document.getElementById('output-conversation-chars').textContent = data.output_conversation_chars;
-                document.getElementById('output-conversation-tokens').textContent = data.output_conversation_tokens;
-                document.getElementById('output-total-chars').textContent = data.output_total_chars;
-                document.getElementById('output-total-tokens').textContent = data.output_total_tokens;
-                document.getElementById('total-chars').textContent = data.total_chars;
-                document.getElementById('total-tokens').textContent = data.total_tokens;
+                document.getElementById('input-chars').textContent = data.input.chars;
+                document.getElementById('input-tokens').textContent = data.input.tokens;
+                document.getElementById('output-code-chars').textContent = data.output_code.chars;
+                document.getElementById('output-code-tokens').textContent = data.output_code.tokens;
+                document.getElementById('output-conversation-chars').textContent = data.output_conversation.chars;
+                document.getElementById('output-conversation-tokens').textContent = data.output_conversation.tokens;
+                document.getElementById('output-total-chars').textContent = data.output_total.chars;
+                document.getElementById('output-total-tokens').textContent = data.output_total.tokens;
+                document.getElementById('total-chars').textContent = data.total.chars;
+                document.getElementById('total-tokens').textContent = data.total.tokens;
                 
                 // Update pricing
-                document.getElementById('price-coursera').textContent = '$' + data.price_coursera.toFixed(6);
-                document.getElementById('price-o3-api').textContent = '$' + data.price_o3_api.toFixed(6);
-                document.getElementById('price-claude3-7').textContent = '$' + data.price_claude3_7.toFixed(6);
-                document.getElementById('price-gemini-2-5').textContent = '$' + data.price_gemini_2_5.toFixed(6);
+                // Cursor
+                document.getElementById('price-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(2);
+                document.getElementById('price-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(2);
+                document.getElementById('price-cursor-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(2);
+                document.getElementById('price-cursor-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(2);
+                
+                // O3
+                document.getElementById('price-o3-usd').textContent = '$' + data.pricing.o3_api.usd.toFixed(2);
+                document.getElementById('price-o3-ils').textContent = '₪' + data.pricing.o3_api.ils.toFixed(2);
+                document.getElementById('price-o3-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(2);
+                document.getElementById('price-o3-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(2);
+                
+                // Claude
+                document.getElementById('price-claude-usd').textContent = '$' + data.pricing.claude3_7.usd.toFixed(2);
+                document.getElementById('price-claude-ils').textContent = '₪' + data.pricing.claude3_7.ils.toFixed(2);
+                document.getElementById('price-claude-cursor-usd').textContent = '$' + (data.pricing.cursor.usd * 2).toFixed(2);
+                document.getElementById('price-claude-cursor-ils').textContent = '₪' + (data.pricing.cursor.ils * 2).toFixed(2);
+                
+                // Gemini
+                document.getElementById('price-gemini-usd').textContent = '$' + data.pricing.gemini_2_5.usd.toFixed(2);
+                document.getElementById('price-gemini-ils').textContent = '₪' + data.pricing.gemini_2_5.ils.toFixed(6);
+                document.getElementById('price-gemini-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(6);
+                document.getElementById('price-gemini-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(6);
+                
+                // Update exchange rate info
+                document.getElementById('exchange-rate').textContent = data.exchange_rate.usd_to_ils.toFixed(4);
+                document.getElementById('exchange-rate-timestamp').textContent = data.exchange_rate.timestamp;
             })
             .catch(error => {
                 loadingDiv.style.display = 'none';
                 alert('שגיאה: ' + error.message);
             });
-        });
+        }
+        
+        // Handle file upload button click
+        uploadButton.addEventListener('click', analyzeFile);
     </script>
 </body>
 </html>

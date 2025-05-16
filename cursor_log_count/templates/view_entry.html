@@ -35,6 +35,14 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        .exchange-rate-info {
+            background-color: #f0f8ff; /* Light blue background */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            text-align: center;
+        }
         .content-box {
             border: 1px solid #ddd;
             padding: 15px;
@@ -66,54 +74,43 @@
     </div>
     
     <h2>תוצאות הניתוח</h2>
+    <div class="exchange-rate-info">
+        <p>שער הדולר: {{ analysis.exchange_rate.usd_to_ils|round(4) }} ש"ח | מעודכן לתאריך: {{ analysis.exchange_rate.timestamp }}</p>
+    </div>
     <table>
         <tr>
             <th>מדד</th>
-            <th>ערך</th>
+            <th>תווים</th>
+            <th>טוקנים</th>
         </tr>
         <tr>
             <td>מספר שאילתות</td>
-            <td>{{ analysis.queries_count }}</td>
+            <td colspan="2">{{ analysis.queries_count }}</td>
         </tr>
         <tr>
-            <td>תווי קלט</td>
-            <td>{{ analysis.input_chars }}</td>
+            <td>קלט</td>
+            <td>{{ analysis.input.chars }}</td>
+            <td>{{ analysis.input.tokens }}</td>
         </tr>
         <tr>
-            <td>טוקנים בקלט</td>
-            <td>{{ analysis.input_tokens }}</td>
+            <td>קוד בפלט</td>
+            <td>{{ analysis.output_code.chars }}</td>
+            <td>{{ analysis.output_code.tokens }}</td>
         </tr>
         <tr>
-            <td>תווי קוד בפלט</td>
-            <td>{{ analysis.output_code_chars }}</td>
+            <td>שיחה בפלט</td>
+            <td>{{ analysis.output_conversation.chars }}</td>
+            <td>{{ analysis.output_conversation.tokens }}</td>
         </tr>
         <tr>
-            <td>טוקנים בקוד פלט</td>
-            <td>{{ analysis.output_code_tokens }}</td>
+            <td>סה"כ פלט</td>
+            <td>{{ analysis.output_total.chars }}</td>
+            <td>{{ analysis.output_total.tokens }}</td>
         </tr>
         <tr>
-            <td>תווי שיחה בפלט</td>
-            <td>{{ analysis.output_conversation_chars }}</td>
-        </tr>
-        <tr>
-            <td>טוקנים בשיחת פלט</td>
-            <td>{{ analysis.output_conversation_tokens }}</td>
-        </tr>
-        <tr>
-            <td>סה"כ תווי פלט</td>
-            <td>{{ analysis.output_total_chars }}</td>
-        </tr>
-        <tr>
-            <td>סה"כ טוקנים בפלט</td>
-            <td>{{ analysis.output_total_tokens }}</td>
-        </tr>
-        <tr>
-            <td>סה"כ תווים</td>
-            <td>{{ analysis.total_chars }}</td>
-        </tr>
-        <tr>
-            <td>סה"כ טוקנים</td>
-            <td>{{ analysis.total_tokens }}</td>
+            <td>סה"כ</td>
+            <td>{{ analysis.total.chars }}</td>
+            <td>{{ analysis.total.tokens }}</td>
         </tr>
     </table>
     
@@ -122,22 +119,37 @@
         <tr>
             <th>מודל/ספק</th>
             <th>מחיר ($)</th>
+            <th>מחיר (שח)</th>
+            <th>מחיר Cursor ($)</th>
+            <th>מחיר Cursor (שח)</th>
         </tr>
         <tr>
-            <td>Coursera (לפי שאילתה)</td>
-            <td>${{ "%.6f"|format(analysis.price_coursera) }}</td>
+            <td>Cursor (לפי שאילתה)</td>
+            <td>${{ "%.2f"|format(analysis.pricing.cursor.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.cursor.ils) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.cursor.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.cursor.ils) }}</td>
         </tr>
         <tr>
             <td>O3 API</td>
-            <td>${{ "%.6f"|format(analysis.price_o3_api) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.o3_api.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.o3_api.ils) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.cursor.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.cursor.ils) }}</td>
         </tr>
         <tr>
             <td>Claude 3.7</td>
-            <td>${{ "%.6f"|format(analysis.price_claude3_7) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.claude3_7.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.claude3_7.ils) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.cursor.usd * 2) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.cursor.ils * 2) }}</td>
         </tr>
         <tr>
             <td>Gemini 2.5</td>
-            <td>${{ "%.6f"|format(analysis.price_gemini_2_5) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.gemini_2_5.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.gemini_2_5.ils) }}</td>
+            <td>${{ "%.2f"|format(analysis.pricing.cursor.usd) }}</td>
+            <td>₪{{ "%.2f"|format(analysis.pricing.cursor.ils) }}</td>
         </tr>
     </table>
     
