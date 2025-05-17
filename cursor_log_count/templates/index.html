@@ -310,9 +310,9 @@
                 
                 // Gemini
                 document.getElementById('price-gemini-usd').textContent = '$' + data.pricing.gemini_2_5.usd.toFixed(2);
-                document.getElementById('price-gemini-ils').textContent = '₪' + data.pricing.gemini_2_5.ils.toFixed(6);
-                document.getElementById('price-gemini-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(6);
-                document.getElementById('price-gemini-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(6);
+                document.getElementById('price-gemini-ils').textContent = '₪' + data.pricing.gemini_2_5.ils.toFixed(2);
+                document.getElementById('price-gemini-cursor-usd').textContent = '$' + data.pricing.cursor.usd.toFixed(2);
+                document.getElementById('price-gemini-cursor-ils').textContent = '₪' + data.pricing.cursor.ils.toFixed(2);
                 
                 // Update exchange rate info
                 document.getElementById('exchange-rate').textContent = data.exchange_rate.usd_to_ils.toFixed(4);
