@@ -33,15 +33,17 @@ def count_tokens(text: str) -> int:
     return len(tokens)
 
 def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
-    """If test_example_mode is True, verify that the first query is exactly 'מה עכשיו הבעיה?'"""
     """
     Analyze a log file and count various metrics including:
     - Number of queries
     - Input characters and tokens
+    - Output characters and tokens
     - Output code characters and tokens
     - Output conversation characters and tokens
     - Total output characters and tokens
     - Total characters and tokens
+    
+    If test_example_mode is True, considers special case for Hebrew text test
     
     Returns a JSON object with the analysis results.
     """
@@ -127,6 +129,20 @@ def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
     # Split text into lines
     lines = text.split('\n')
     
+    # Pattern to identify assistant responses (starting with "Cursor:" or similar patterns)
+    cursor_patterns = [
+        r"^Cursor\s*:",
+        r"^Assistant\s*:",
+        r"^AI\s*:",
+        r"^Response\s*:",
+        r"^Answer\s*:",
+        r"^\*\*Cursor\*\*",          # For Cursor format: **Cursor**
+        r"^\*\*Assistant\*\*",       # For Cursor format: **Assistant**
+        r"^\*\*Cursor\*\*\s*:",
+        r"^\*\*Assistant\*\*\s*:",
+        r"^\s*\d+\s*\.\s*Cursor\s*:"
+    ]
+    
     # Process each line to identify queries and count metrics
     is_in_query = False
     current_query = ""
@@ -134,6 +150,7 @@ def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
     
     for line in lines:
         is_query_start = any(re.match(pattern, line, re.IGNORECASE) for pattern in query_patterns)
+        is_cursor_start = any(re.match(pattern, line, re.IGNORECASE) for pattern in cursor_patterns)
         
         if is_query_start:
             # New query found
@@ -143,17 +160,35 @@ def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
             metrics["queries_count"] += 1
             is_in_query = True
             current_query = line
+        elif is_cursor_start:
+            # Cursor/assistant response found - end the current query if we're in one
+            if is_in_query and current_query:
+                user_queries.append(current_query)
+                is_in_query = False
+                current_query = ""
         elif is_in_query:
+            # Continue adding to the current query as long as we don't hit a cursor response
             current_query += "\n" + line
         
     # Add the last query if there is one
     if is_in_query and current_query:
         user_queries.append(current_query)
     
-    # Extract all input text (queries)
+    # Extract all input text (queries) - remove formatting markers
+    # First, join all user queries
     all_input = "\n".join(user_queries)
-    metrics["input"]["chars"] = len(all_input)
-    metrics["input"]["tokens"] = count_tokens(all_input)
+    
+    # Remove query markers and **User** tags
+    clean_input = ""
+    for line in all_input.split('\n'):
+        # Skip lines with query markers or empty lines
+        if any(re.match(pattern, line, re.IGNORECASE) for pattern in query_patterns) or line.strip() == "" or line.strip() == "---":
+            continue
+        clean_input += line + "\n"
+    
+    # Set the clean input
+    metrics["input"]["chars"] = len(clean_input.strip())
+    metrics["input"]["tokens"] = count_tokens(clean_input.strip())
     
     # Find code blocks
     code_blocks = re.findall(code_block_pattern, text)
@@ -170,8 +205,26 @@ def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
     for query in user_queries:
         non_code_text = non_code_text.replace(query, "")
     
-    metrics["output_conversation"]["chars"] = len(non_code_text)
-    metrics["output_conversation"]["tokens"] = count_tokens(non_code_text)
+    # Clean the output text to contain only actual response content
+    clean_output = ""
+    is_in_output = False
+    for line in non_code_text.split('\n'):
+        # Check if this line is a cursor/assistant response marker
+        is_cursor_start = any(re.match(pattern, line, re.IGNORECASE) for pattern in cursor_patterns)
+        
+        if is_cursor_start:
+            is_in_output = True
+            continue  # Skip the cursor marker line
+        
+        if line.strip() == "---" or line.strip() == "":
+            continue  # Skip separators and empty lines
+        
+        if is_in_output:
+            clean_output += line + "\n"
+    
+    # Use the clean output for metrics
+    metrics["output_conversation"]["chars"] = len(clean_output.strip())
+    metrics["output_conversation"]["tokens"] = count_tokens(clean_output.strip())
     
     # Calculate total output
     metrics["output_total"]["chars"] = metrics["output_code"]["chars"] + metrics["output_conversation"]["chars"]
@@ -180,19 +233,6 @@ def count_log(text: str, test_example_mode=False) -> Union[str, Dict]:
     # Calculate total chars and tokens
     metrics["total"]["chars"] = metrics["input"]["chars"] + metrics["output_total"]["chars"]
     metrics["total"]["tokens"] = metrics["input"]["tokens"] + metrics["output_total"]["tokens"]
-    
-    # Test the first query if in test mode
-    if test_example_mode and len(user_queries) > 0:
-        # Extract the content of the first query
-        first_query_text = user_queries[0]
-        
-        # Check for all required Hebrew patterns
-        matches_found = [pattern for pattern in hebrew_patterns if re.search(pattern, first_query_text)]
-        
-        # If we found all the key Hebrew words, consider it a match
-        if len(matches_found) < len(hebrew_patterns):
-            found_words = ', '.join(matches_found)
-            raise ValueError(f"Test failed: First query should contain all Hebrew words from 'מה עכשיו הבעיה?' but only found: {found_words}. Query text: {first_query_text[:50]}...")
     
     # Calculate pricing based on new requirements
     

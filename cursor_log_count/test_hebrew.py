@@ -23,9 +23,6 @@ print(f"Exchange rate timestamp: {result['exchange_rate']['timestamp']}")
 print("\nComplete result:")
 print(json.dumps(result, indent=2, ensure_ascii=False))
 
-# Now test with test_example_mode=True
-try:
-    result_test = count_log(test_text, test_example_mode=True)
-    print("\nTest mode passed!")
-except Exception as e:
-    print(f"\nTest mode failed: {e}")
+assert (result["input"]["chars"]==len("מה עכשיו הבעיה?"))
+assert (result["output_total"]["chars"]==len("נראה שהשאלה שלך מתייחסת לבעיה בקוד"))
+print("\nTest mode passed!")
