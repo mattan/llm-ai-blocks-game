@@ -1,107 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מתן ליבוביץ</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-            direction: rtl;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2, h3 {
-            color: #333;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .links-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .links-section h3 {
-            margin-bottom: 10px;
-        }
-        .links-section ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .links-section li {
-            margin-bottom: 8px;
-        }
-    </style>
+    <title>מתן ליבוביץ - מדען נתונים ואיש בינה מלאכותית</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
 </head>
 <body>
-    <div class="container">
-        <h2><a href="/2">לחץ כאן למעבר לעיצוב החדש</a></h2>
-        <h1>על עצמי:</h1>
-        
-        <p>הי לכולם!
-            אני אוהב לשחק שחמט (גם בתחרויות וגם בchess דוט קום)
-            גר בפתח תקווה
-        </p>
-
-        <h2>על הקשר שלי לבינה מלאכותית:</h2>
-            
-        <h3>בלימודים:</h3>
-        <p>
-            אחרי התואר השני פרסמתי מאמר גדול על מודל בינה מלאכותית שפיתחתי (לפני כ7 שנים)
-            הוא התפרסם והמודל הזה משמש בבית חולים בסין.
-            היום אני בהפסקה מעבודה כדי להתעדכן במהפכה של הבינה מלאכותית שקורת היום (אני מתעניין בעיקר בכתיבת קוד, אבל לא רק)
-        </p>
-
-        <h3> בעבודה:</h3>
-        <p>
-            אני מדען נתונים (כותב קוד בפייתון – כותב בעיקר מוצרים שמנתחים כמויות גדולות של נתונים עם בינה מלאכותית)
-            עד סוף 2024 עבדתי בבנק ומאז עד היום אני בבית (מחכה שיצא gpt-5 וישנה הכל 🙂)
-        </p>
-
-        <h3>ובתור תחביב:</h3>
-        <p>          
-            אני מנהל את הקבוצה - 
-            <img src="/static/favicon.ico" alt="Icon" style="width: 20px; height: 20px; vertical-align: middle;">
-            <a href="https://www.facebook.com/groups/1188234756236379">
-            vibe coders ישראל</a> 
-            ומכין פרוייקטים שמשתמשים בבינה מלאכותית
-        </p>
-
-        <div class="links-section">
-            <h3>פרויקטים:</h3>
-            <ul>
-                {% for blueprint in blueprints %}
-                <li>
-                    <a href="/{{ blueprint.name }}/">{{ blueprint.html_name }}</a> (
-                    {% if blueprint.html_img %}
-                    <img src="{{ blueprint.html_img }}" alt="Icon" style="width: 20px; height: 20px; vertical-align: middle;">
-                    {% endif %}
-                    {% if blueprint.html_link %}
-                    <a href="{{ blueprint.html_link }}">{{ blueprint.html_creator }}</a>
-                    {% else %}
-                    {{ blueprint.html_creator }}
-                    {% endif %}
-                    )
-                </li>
-                {% endfor %}
-            </ul>
+    <header>
+        <div class="container">
+            <h1>שלום, אני מתן ליבוביץ</h1>
+            <p class="tagline">מתכנת, מדען נתונים ואיש בינה מלאכותית</p>
         </div>
-    </div>
+    </header>
+
+    <section id="about" class="section">
+        <div class="container">
+            <h2>קצת עליי</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>היי! אני מתן, גר בפתח תקווה ואוהב לשחק שחמט (גם בתחרויות וגם ב-chess.com).</p>
+                    
+                    <h3>על הקשר שלי לבינה מלאכותית:</h3>
+                    
+                    <h4>בלימודים:</h4>
+                    <p>
+                        אחרי התואר השני פרסמתי מאמר גדול על מודל בינה מלאכותית שפיתחתי (לפני כ7 שנים)<br>
+                        הוא התפרסם והמודל הזה משמש בבית חולים בסין.<br>
+                        היום אני בהפסקה מעבודה כדי להתעדכן במהפכה של הבינה מלאכותית שקורת היום (אני מתעניין בעיקר בכתיבת קוד, אבל לא רק)
+                    </p>
+                    
+                    <h4>בעבודה:</h4>
+                    <p>
+                        אני מדען נתונים (כותב קוד בפייתון – כותב בעיקר מוצרים שמנתחים כמויות גדולות של נתונים עם בינה מלאכותית)<br>
+                        עד סוף 2024 עבדתי בבנק ומאז עד היום אני בבית (מחכה שיצא gpt-5 וישנה הכל 🙂)
+                    </p>
+
+                    <h4>בתור תחביב:</h4>
+                    <p>אני מנהל את הקבוצה - <a href="https://www.facebook.com/groups/1188234756236379" target="_blank" class="social-link">
+                    <img src="static/favicon.ico" alt="Vibe Coders" style="width: 1em; height: 1em; vertical-align: middle; margin: 0 5px;"> Vibe Coders ישראל</a> ומכין פרויקטים שמשתמשים בבינה מלאכותית.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 style="color: #ff0000 !important; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <span style="color: #4dff35;">✦</span>
+                    <span>פרויקטים</span>
+                    <span style="color: #4dff35;">✦</span>
+                </h2>
+            </div>
+            <div class="projects-grid">
+                {% for blueprint in blueprints %}
+                <div class="project-card">
+                    <h3><a href="/{{ blueprint.name }}/">{{ blueprint.html_name }}</a></h3>
+                    {% if blueprint.description %}
+                    <p>{{ blueprint.description|replace('\n', '<br>')|safe }}</p>
+                    {% else %}
+                    <p>פרוייקט מבוסס בינה מלאכותית שהגיע מהקהילה, טרם נשלח תיאור קצר של הפרוייקט</p>
+                    {% endif %}
+
+                    <p style="direction: ltr;margin-top: auto;">
+                        {% if blueprint.html_img %}
+                        <img src="{{ blueprint.html_img }}" alt="Icon" style="width: 2em; height: 2em; vertical-align: middle;">
+                        {% endif %}
+                        {% if blueprint.html_link %}
+                        <a href="{{ blueprint.html_link }}">{{ blueprint.html_creator }}</a>
+                        {% else %}
+                        {{ blueprint.html_creator }}
+                        {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
+    <footer>
+        <div class="container">
+            <p>© 2025 מתן</p>
+        </div>
+    </footer>
+
+    <script src="/static/script.js"></script>
 </body>
-</html> 
+</html>

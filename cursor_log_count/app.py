@@ -8,6 +8,7 @@ from .countlog import count_log
 # Create the blueprint
 app = Blueprint("cursor_log_count", __name__, template_folder="templates", url_prefix="/cursor_log_count")
 app.html_name = "Cursor Log Count"
+app.description = "אפליקצייה להשוואת מחירי טוקנים (של בינה מלאכותית)"
 app.html_creator = "איתמר"
 app.html_link = "https://www.facebook.com/itamar.ho"  
 app.html_img = "/static/itamar.ho.jpg"  

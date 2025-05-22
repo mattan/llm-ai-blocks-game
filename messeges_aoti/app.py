@@ -20,6 +20,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Blueprint("messeges_aoti", __name__, template_folder="./templates", url_prefix="/messeges_aoti")
 app.html_name = "אוטי 2.0"
+app.description = "אתר המשך לאפליקצה שכבר קיימת אוטי, \n האפליקציה היא בינה מלאכותית שנעזרת במשיבים אנושיים כדי לשפר את התשובות שלה"
 app.html_creator = "רז"
 app.html_link = "https://www.facebook.com/groups/1188234756236379/user/1051257580"
 app.html_img = "/static/raz.jpg"

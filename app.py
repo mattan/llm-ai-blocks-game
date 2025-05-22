@@ -42,6 +42,7 @@ def register_blueprints(root_dir = '.'):
                     blueprint_info = {
                         'name': getattr(sub_app, 'name', ''),
                         'html_name': getattr(sub_app, 'html_name', 'אפליקציה ללא שם'),
+                        'description': getattr(sub_app, 'description', ''),
                         'html_creator': getattr(sub_app, 'html_creator', 'אנונימי'),
                         'html_link': getattr(sub_app, 'html_link', ''),
                         'html_img': getattr(sub_app, 'html_img', '')

@@ -6,6 +6,8 @@ from .blockes import BlocksGame, BlockColors
 
 app = Blueprint("blocks", __name__, template_folder="..", url_prefix="/blocks")
 app.html_name = "פרויקט בלוקים"
+app.description = "משחק זיהוי תבניות \n השחקן מנסה להבין את התנהגות הבינה המלאכותית"
+
 
 game = BlocksGame()
 

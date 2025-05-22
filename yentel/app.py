@@ -4,6 +4,7 @@ from flask import Flask, render_template, Blueprint
 
 app = Blueprint("yentel",__name__, template_folder="..", url_prefix="/yentel")
 app.html_name = "ינטל הכרויות (החדש)"
+app.description = "אתר הכרויות חדשני בו בינה מלאכותית יוצרת, מוצאת לך התאמה בעזרת המידע עלייך מרשת האינטרנט"
 app.html_creator = "הודיה"
 app.html_link = "https://www.facebook.com/hodaya.netzer"
 app.html_img = "/static/hodaya.netzer.jpg"
