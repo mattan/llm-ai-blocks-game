@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, Blueprint
 
 
-app = Blueprint("portfolio",__name__, template_folder="..", url_prefix="/yentel")
+app = Blueprint("portfolio",__name__, template_folder="..", url_prefix="/portfolio")
 app.html_name = "חיזוי מניות"
 app.description = "אתר שחוזה מניות\n מדובר על מחקר במתמטיקה תיאורטית בלבד (לא ייעוץ) שימוש מתוצאות באחריות המשתמש בלבד"
 app.html_creator = "אליאור"
