@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניצול ארביטרג'</title>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio/style.css') }}">
+    <!-- Plotly.js for interactive charts -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>חיפוש הזדמנות לניצול ארביטרג'</h1>
+        
+        <div class="stock-selector">
+            <div class="stock-input">
+                <label for="stock1">מניה ראשונה (לדוגמה: KO):</label>
+                <input type="text" id="stock1" value="{{ portf1 if portf1 else 'KO' }}" class="stock-input-field">
+            </div>
+            <div class="stock-input">
+                <label for="stock2">מניה שנייה (לדוגמה: PEP):</label>
+                <input type="text" id="stock2" value="{{ portf2 if portf2 else 'PEP' }}" class="stock-input-field">
+            </div>
+            <button id="update-stocks" class="update-button">עדכן מניות</button>
+        </div>
+        
+        <div class="stock-info-container">
+            <div class="stock-info">
+                <h3>{{ stock1_info.name }} ({{ stock1_info.symbol }})</h3>
+                <p>סוג: {{ stock1_info.sector }}</p>
+                <p>איזור: {{ stock1_info.industry }}</p>
+            </div>
+            
+            <div class="info-box">
+                <div class="covariance">מקדם המתאם: <span id="covariance-value">{{ "%.4f"|format(covariance) if covariance is not none else 'אין נתונים' }}</span></div>
+                <div class="shift-controls">
+                    <label for="shift-days">הזז ימים עבור המניה השנייה:</label>
+                    <div class="shift-inputs">
+                        <input type="range" id="shift-days" name="shift-days" min="-30" max="30" value="{{ shift_days }}">
+                        <div class="shift-text-input">
+                            <input type="number" id="shift-days-input" min="-3000" max="3000" value="{{ shift_days }}" class="form-control">
+                            <span>ימים</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="last-updated">עודכן לאחרונה: {{ current_time }}</div>
+            </div>
+            
+            <div class="stock-info">
+                <h3>{{ stock2_info.name }} ({{ stock2_info.symbol }})</h3>
+                <p>סוג: {{ stock2_info.sector }}</p>
+                <p>איזור: {{ stock2_info.industry }}</p>
+            </div>
+        </div>
+        </div>
+        
+        <div id="plot-container" class="chart">
+            {{ plot_html|safe }}
+        </div>
+        
+        
+    </div>
+
+    <!-- External JavaScript -->
+
+    <script src="{{ url_for('static', filename='portfolio/main.js') }}"></script>
+</body>
+</html>
