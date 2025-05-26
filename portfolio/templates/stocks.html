@@ -33,7 +33,20 @@
             </div>
             
             <div class="info-box">
-                <div class="covariance">מקדם המתאם: <span id="covariance-value">{{ "%.4f"|format(covariance) if covariance is not none else 'אין נתונים' }}</span></div>
+                <div class="covariance">מקדם המתאם: 
+                    <span id="covariance-value" 
+                          class="{% if covariance is not none %}
+                                    {% if covariance|abs > 0.7 %}
+                                        correlation-high
+                                    {% elif covariance|abs < 0.3 %}
+                                        correlation-low
+                                    {% else %}
+                                        correlation-medium
+                                    {% endif %}
+                                 {% endif %}">
+                        {{ "%.4f"|format(covariance) if covariance is not none else 'אין נתונים' }}
+                    </span>
+                </div>
                 <div class="shift-controls">
                     <label for="shift-days">הזז ימים עבור המניה השנייה:</label>
                     <div class="shift-inputs">
