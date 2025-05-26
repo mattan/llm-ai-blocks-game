@@ -4,7 +4,7 @@ from .portfolio_calc import home
 
 app = Blueprint("portfolio",__name__, template_folder="templates", url_prefix="/portfolio")
 app.html_name = "חיזוי מניות"
-app.description = "אתר שחוזה מניות\n מדובר על מחקר במתמטיקה תיאורטית בלבד (לא ייעוץ) שימוש מתוצאות באחריות המשתמש בלבד"
+app.description = "אתר שחוזה מניות\n מדובר על מחקר במתמטיקה תיאורטית בלבד (לא ייעוץ) שימוש בתוצאות באחריות המשתמש בלבד"
 app.html_creator = "אליאור"
 app.html_link = "https://www.facebook.com/elior.kinda"
 app.html_img = "/static/elior.kinda.jpg"
