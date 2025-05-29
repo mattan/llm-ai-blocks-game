@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 stock1 + ' ו-' + stock2 + '...</div>';
         
         // Build the URL with all parameters
-        const url = `portf1=${encodeURIComponent(stock1)}&portf2=${encodeURIComponent(stock2)}&shift_days=${shiftDaysValue}`;
+        const url = `?portf1=${encodeURIComponent(stock1)}&portf2=${encodeURIComponent(stock2)}&shift_days=${shiftDaysValue}`;
         
         // Navigate to the new URL
         window.location.href = url;
