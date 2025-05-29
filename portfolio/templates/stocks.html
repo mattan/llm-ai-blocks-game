@@ -46,6 +46,9 @@
                                  {% endif %}">
                         {{ "%.4f"|format(covariance) if covariance is not none else 'אין נתונים' }}
                     </span>
+                    <button id="find-optimal-shift" class="ai-optimize-btn" title="מצא את נקודת האופטימום">
+                        ✨
+                    </button>
                 </div>
                 <div class="shift-controls">
                     <label for="shift-days">הזז ימים עבור המניה השנייה:</label>
@@ -54,6 +57,7 @@
                         <div class="shift-text-input">
                             <input type="number" id="shift-days-input" min="-3000" max="3000" value="{{ shift_days }}" class="form-control">
                             <span>ימים</span>
+
                         </div>
                     </div>
                 </div>

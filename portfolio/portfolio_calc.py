@@ -1,9 +1,10 @@
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, redirect
 import pandas as pd
 from datetime import datetime, timedelta
 import requests
 import plotly.graph_objects as go
 from cachetools.func import ttl_cache
+import numpy as np
 
 @ttl_cache  # ttl=600 maxsize=128
 def get_yahoo_finance_data(ticker):
@@ -161,7 +162,7 @@ def home():
         # Get parameters from URL or use defaults
         portf1 = request.args.get('portf1', 'KO').upper()
         portf2 = request.args.get('portf2', 'PEP').upper()
-        shift_days = int(request.args.get('shift_days', 0))
+        
 
         # Fetch stock data and info
         ko_result = get_yahoo_finance_data(portf1)
@@ -177,7 +178,20 @@ def home():
         stock1_info = get_stock_info(ko_meta or {})
         stock2_info = get_stock_info(pep_meta or {})
 
+        # Handle shift_days parameter
+        shift_param = request.args.get('shift_days', '0')
         
+        # Check if we need to find optimal shift
+        if str(shift_param).upper() == 'AUTO':
+            optimal_shift = find_optimal_shift(ko_data, pep_data)
+            return redirect(f'?portf1={portf1}&portf2={portf2}&shift_days={optimal_shift}')
+            
+        # Otherwise, try to convert to int
+        try:
+            shift_days = int(shift_param)
+        except (ValueError, TypeError):
+            shift_days = 0
+
         # Calculate data and create plot
         returns, covariance = calculate_shifted_data(ko_data, pep_data, shift_days)
         
@@ -213,7 +227,12 @@ def update_plot():
         # קבלת פרמטרים מה-URL
         portf1 = request.args.get('portf1', 'KO').upper()
         portf2 = request.args.get('portf2', 'PEP').upper()
-        shift_days = int(request.args.get('shift_days', 0))
+        shift_days_param = int(request.args.get('shift_days', '0'))
+        
+        # טעינת נתוני המניות
+        ko_data, _ = get_yahoo_finance_data(portf1)
+        pep_data, _ = get_yahoo_finance_data(portf2)
+
         
         print(f"Received request - Portf1: {portf1}, Portf2: {portf2}, Shift Days: {shift_days}")
         
@@ -290,3 +309,34 @@ def update_plot():
             'plot_html': '<div style="color: red; padding: 20px; text-align: center;">אירעה שגיאה בלתי צפויה. נסה לרענן את הדף.</div>',
             'covariance': 0
         }), 500
+
+
+####################################
+
+def find_optimal_shift(stock1_data, stock2_data):
+    """
+    מוצא את ההזזה האופטימלית בין שתי מניות
+    מחזיר את מספר הימים האופטימלי להזזה
+    """
+    try:
+        # Define search ranges (exclude 0)
+        negative_shifts = range(-30, 0)  # -30 to -1
+        positive_shifts = range(1, 31)   # 1 to 30
+        
+        # Combine both ranges without 0
+        shift_ranges = list(negative_shifts) + list(positive_shifts)
+        correlations = []
+        
+        # Calculate correlation for each shift
+        for shift in shift_ranges:
+            _, corr = calculate_shifted_data(stock1_data, stock2_data, shift)
+            correlations.append(abs(corr))  # Use absolute value to find maximum correlation
+        
+        # Find the shift with maximum correlation
+        optimal_shift = shift_ranges[np.argmax(correlations)]
+        
+        return optimal_shift
+        
+    except Exception as e:
+        print(f"Error in find_optimal_shift: {str(e)}")
+        return 0  # Return 0 as default in case of error

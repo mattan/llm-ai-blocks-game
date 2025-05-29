@@ -43,10 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Function to update the plot with current values
-    function updatePlot() {
+    function updatePlot(auto=false) {
         const stock1 = stock1Input.value.trim().toUpperCase();
         const stock2 = stock2Input.value.trim().toUpperCase();
-        const shiftDays = shiftSlider ? parseInt(shiftSlider.value) : 0;
+        let shiftDaysValue = shiftSlider.value;
+        if (auto) {
+            shiftDaysValue = "AUTO";
+        }
         
         if (!stock1 || !stock2) {
             showError('אנא הזן את שמות שתי המניות');
@@ -54,14 +57,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Update URL without page reload
-        updateURL(stock1, stock2, shiftDays);
+        updateURL(stock1, stock2, shiftDaysValue);
         
         // Show loading message
         plotContainer.innerHTML = '<div style="padding: 20px; text-align: center;">טוען נתונים עבור ' + 
                                 stock1 + ' ו-' + stock2 + '...</div>';
         
         // Build the URL with all parameters
-        const url = `./?portf1=${encodeURIComponent(stock1)}&portf2=${encodeURIComponent(stock2)}&shift_days=${shiftDays}`;
+        const url = `portf1=${encodeURIComponent(stock1)}&portf2=${encodeURIComponent(stock2)}&shift_days=${shiftDaysValue}`;
         
         // Navigate to the new URL
         window.location.href = url;
@@ -78,7 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners
     if (updateButton) {
-        updateButton.addEventListener('click', updatePlot);
+        updateButton.addEventListener('click', function() {
+            // Make sure we have valid values before updating
+            updatePlot();
+        });
     }
     
     // Update when pressing Enter in input fields
@@ -107,6 +113,15 @@ document.addEventListener('DOMContentLoaded', function() {
             shiftSlider.value = value;
             updatePlot();
         });
+        
+        // Handle find optimal button click
+        const findOptimalBtn = document.getElementById('find-optimal-shift');
+        if (findOptimalBtn) {
+            findOptimalBtn.addEventListener('click', function() {
+                // Set shift input to 'AUTO' and trigger change
+                updatePlot(true);
+            });
+        }
         
         // Also update on Enter key in text input
         shiftInput.addEventListener('keypress', function(e) {
