@@ -83,7 +83,7 @@ def check_specific_number(num, K):
 if __name__ == "__main__":
     # בדיקה עם K=3
     print("חיפוש עם K=6:")
-    results = find_numbers_with_digit_rearrangement(K=6, max_num=100000)
+    results = find_numbers_with_digit_rearrangement(K=6, max_num=1000000)
     print_results(results)
     
     print("\n" + "="*50 + "\n")
