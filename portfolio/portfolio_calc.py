@@ -156,6 +156,9 @@ def get_stock_info(ticker_meta):
         'industry': ticker_meta.get('exchangeTimezoneName', 'N/A')
     }
 
+def swot_home():
+    return render_template('swot.html')
+
 
 def home():
     try:

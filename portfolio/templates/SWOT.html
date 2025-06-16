@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניתוח SWOT - אפליקציה לחיזוי ערך מניות</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .quadrant {
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quadrant::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.05;
+            background-size: 100px 100px;
+            background-repeat: repeat;
+        }
+        
+        .strengths {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+        }
+        
+        .weaknesses {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        .opportunities {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        
+        .threats {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+        
+        .quadrant h2 {
+            font-size: 1.8em;
+            margin: 0 0 25px 0;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+            padding-bottom: 15px;
+        }
+        
+        .item {
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .item h3 {
+            font-size: 1.1em;
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .item h3:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .item ul {
+            margin: 0;
+            padding-right: 20px;
+            list-style: none;
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .item.collapsed ul {
+            max-height: 0;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .swot-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .quadrant {
+                padding: 20px;
+            }
+            
+            .quadrant h2 {
+                font-size: 1.5em;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <div class="header">
+            <h1>ניתוח SWOT מקיף - אפליקציה לחיזוי ערך מניות</h1>
+        </div>
+        
+        <div class="swot-grid">
+            <div class="quadrant strengths">
+                <h2>חוזקות (Strengths)</h2>
+                
+                <div class="item">
+                    <h3>טכנולוגיה מתקדמת</h3>
+                    <ul>
+                        <li>שימוש באלגוריתמי AI ו-Machine Learning מתקדמים</li>
+                        <li>יכולת לעבד ולנתח נתונים מורכבים בזמן אמת</li>
+                        <li>אלגוריתמים מותאמים לזיהוי דפוסים בשווקי הון</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>עיבוד נתונים מהיר ויעיל</h3>
+                    <ul>
+                        <li>יכולת לנתח כמויות עצומות של נתונים תוך שניות</li>
+                        <li>עיבוד בו-זמני של מקורות מידע מרובים</li>
+                        <li>זמן תגובה מהיר לשינויים בשוק</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>גישה רחבה למקורות מידע</h3>
+                    <ul>
+                        <li>חיבור למקורות נתונים מגוונים</li>
+                        <li>ניתוח רגשות ברשתות חברתיות ובמדיה</li>
+                        <li>אינטגרציה עם API של בורסות ובנקי השקעות</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>חוסר הטיה רגשית</h3>
+                    <ul>
+                        <li>החלטות מבוססות נתונים בלבד</li>
+                        <li>עקביות בניתוח ללא השפעת לחצים</li>
+                        <li>הימנעות מטעויות אנושיות נפוצות</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="quadrant weaknesses">
+                <h2>חולשות (Weaknesses)</h2>
+                
+                <div class="item">
+                    <h3>מגבלות דיוק</h3>
+                    <ul>
+                        <li>אף מודל AI לא יכול לחזות בדיוק מוחלט</li>
+                        <li>שיעור דיוק מוגבל בתנאי שוק משתנים</li>
+                        <li>קושי בחיזוי תנודות קצרות טווח</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>תלות בנתונים היסטוריים</h3>
+                    <ul>
+                        <li>הביצועים בעבר אינם מבטיחים תוצאות עתידיות</li>
+                        <li>המודלים מבוססים על דפוסים היסטוריים</li>
+                        <li>קושי בהתמודדות עם מגמות חדשות</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>בעיית Overfitting</h3>
+                    <ul>
+                        <li>התאמת יתר לנתונים היסטוריים</li>
+                        <li>ביצועים טובים באימון אך חלשים במציאות</li>
+                        <li>צורך בכוונון מתמיד של המודלים</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>מורכבות טכנית</h3>
+                    <ul>
+                        <li>קושי בהסבר החלטות המודל</li>
+                        <li>דרישה להבנה טכנית מתקדמת</li>
+                        <li>תלות במומחים טכנולוגיים</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="quadrant opportunities">
+                <h2>הזדמנויות (Opportunities)</h2>
+                
+                <div class="item">
+                    <h3>צמיחת שוק ההשקעות הדיגיטליות</h3>
+                    <ul>
+                        <li>עלייה בביקוש לכלי השקעה דיגיטליים</li>
+                        <li>פריצת דרך בטכנולוגיות AI</li>
+                        <li>אימוץ גובר של פתרונות FinTech</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>הרחבת בסיס הלקוחות</h3>
+                    <ul>
+                        <li>משקיעים צעירים המחפשים פתרונות חדשניים</li>
+                        <li>שווקים מתפתחים עם פוטנציאל גידול</li>
+                        <li>שילוב עם פלטפורמות מסחר קיימות</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>חדשנות טכנולוגית</h3>
+                    <ul>
+                        <li>שיפור מתמיד באלגוריתמי ML</li>
+                        <li>אינטגרציה עם טכנולוגיות חדשות</li>
+                        <li>פיתוח יכולות ניתוח חדשות</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="quadrant threats">
+                <h2>איומים (Threats)</h2>
+                
+                <div class="item">
+                    <h3>תחרות עזה</h3>
+                    <ul>
+                        <li>כניסת חברות טכנולוגיה גדולות לתחום</li>
+                        <li>polymarket</li>
+                        <li>stockgpt</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>רגולציה ופיקוח</h3>
+                    <ul>
+                        <li>הגברת הרגולציה על יועצי השקעות אוטומטיים</li>
+                        <li>דרישות חדשות לשקיפות באלגוריתmים</li>
+                        <li>אחריות משפטית על החלטות השקעה</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>סיכונים טכנולוגיים</h3>
+                    <ul>
+                        <li>פריצות אבטחה ודליפת מידע</li>
+                        <li>תקלות טכניות במהלך מסחר</li>
+                        <li>תלות בספקי תשתית חיצוניים</li>
+                    </ul>
+                </div>
+                
+                <div class="item">
+                    <h3>שינויים בשוק</h3>
+                    <ul>
+                        <li>משברים כלכליים שמשבשים את המודלים</li>
+                        <li>שינוי בהתנהגות המשקיעים</li>
+                        <li>אי-וודאות כלכלית גלובלית</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handler to all item headers
+            const itemHeaders = document.querySelectorAll('.item h3');
+            
+            itemHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const item = this.parentElement;
+                    item.classList.toggle('collapsed');
+                });
+                
+                // Collapse all items by default
+                header.parentElement.classList.add('collapsed');
+            });
+            
+
+        });
+    </script>
+</body>
+</html>

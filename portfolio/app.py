@@ -1,5 +1,6 @@
 from flask import Blueprint
-from .portfolio_calc import home
+from .portfolio_calc import home, swot_home
+
 
 
 app = Blueprint("portfolio",__name__, template_folder="templates", url_prefix="/portfolio")
@@ -15,6 +16,10 @@ app.html_img = "/static/elior.kinda.jpg"
 def index():
     """Render the main game page."""
     return home()
+
+@app.route('/swot')
+def swot():
+    return swot_home()
     
 
 
