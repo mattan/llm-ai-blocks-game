@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כלים לחיזוי מניות</title>
+    <!-- Using the existing portfolio stylesheet for consistent design -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio/style.css') }}">
+    <style>
+        /* Extra minimal tweaks for the landing page */
+        body {
+            background-color: #f4f6fb;
+        }
+        .landing-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .link-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        .link-card a {
+            text-decoration: none;
+            color: #1a73e8;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .section-title {
+            margin-top: 40px;
+            font-size: 1.4em;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <h1>ברוכים הבאים לאפליקציית חיזוי מניות</h1>
+
+        <div class="section-title">חומר למנהלים משקיעים או לקוחות</div>
+            <div class="links-grid">
+                    <!-- SWOT page -->
+                <div class="link-card">
+                    <a href="{{ url_for('portfolio.swot') }}">ניתוח SWOT</a>
+                </div>
+            </div>
+        
+
+        <div class="section-title">הדגמות</div>
+        <div class="links-grid">
+            <!-- Arbitrage application -->
+            <div class="link-card">
+                <a href="{{ url_for('portfolio.arbitrage') }}">חיפוש הזדמנות לניצול ארביטרג'</a>
+            </div>
+            <div class="link-card">
+                <a href="javascript:void(0)">חיזוי מבוסס בינה מלאכותית (למנויים בלבד)</a>
+            </div>
+        </div>
+
+        <div class="section-title">מדריכים</div>
+        <div class="links-grid">
+            <div class="link-card">
+                <a href="https://www.facebook.com/groups/1188234756236379/posts/1248317673561420/" target="_blank" rel="noopener">מדריך ראשון - פוסט פייסבוק</a>
+            </div>
+            <div class="link-card">
+                <a href="javascript:void(0)" title="מדריך נוסף יתווסף בקרוב">מדריך נוסף (בקרוב)</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

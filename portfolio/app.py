@@ -14,7 +14,13 @@ app.html_img = "/static/elior.kinda.jpg"
 
 @app.route('/')
 def index():
-    """Render the main game page."""
+    """דף נחיתה ראשי לקישורים שונים באפליקציית הפורטפוליו"""
+    from flask import render_template
+    return render_template('portfolio_index.html')
+
+@app.route('/arbitrage')
+def arbitrage():
+    """הדף הישן של ניצול ארביטרג'"""
     return home()
 
 @app.route('/swot')
