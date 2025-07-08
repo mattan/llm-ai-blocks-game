@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סיכום ארביטראז'</title>
+    <!-- External CSS (reuse the same stylesheet) -->
+    <style>
+        #results-table {
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+          direction: ltr;
+        }
+        
+        #results-table td, #results-table th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        
+        #results-table tr:nth-child(even){background-color: #f2f2f2;}
+        
+        #results-table tr:hover {background-color: #ddd;}
+        
+        #results-table th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #04AA6D;
+          color: white;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='portfolio/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>סיכום הזדמנויות ארביטראז'</h1>
+
+        <p>
+            <a href="{{ url_for('portfolio.arbitrage') }}" class="update-button">חזרה לחישוב ארביטראז'</a>
+        </p>
+
+        {% if results %}
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>מניה 1</th>
+                        <th>מניה 2</th>
+                        <th>הזזה מיטבית (ימים)</th>
+                        <th>מקדם מתאם</th>
+                        <th>ציון |score|</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in results %}
+                    <tr>
+                        <td>{{ item.ticker1 }}</td>
+                        <td>{{ item.ticker2 }}</td>
+                        <td>{{ item.shift }}</td>
+                        <td class="{% if item.covariance is not none %}
+                        {% if item.covariance|abs > 0.7 %}
+                            correlation-high
+                        {% elif item.covariance|abs < 0.3 %}
+                            correlation-low
+                        {% else %}
+                            correlation-medium
+                        {% endif %}
+                     {% endif %}">{{ '%.4f'|format(item.covariance) }}</td>
+                        <td>{{ '%.4f'|format(item.score) }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>לא נמצאו נתונים במטמון. חזור לדף <a href="{{ url_for('portfolio.arbitrage') }}">חישוב ארביטראז'</a> כדי להוריד נתונים.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
